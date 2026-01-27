@@ -14,7 +14,125 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      fishing_logs: {
+        Row: {
+          created_at: string
+          date: string
+          fish_caught: string | null
+          fly_used: string | null
+          id: string
+          lake_id: string | null
+          notes: string | null
+          success_rating: number | null
+          updated_at: string
+          user_id: string
+          water_temperature: number | null
+          weather_conditions: string | null
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          fish_caught?: string | null
+          fly_used?: string | null
+          id?: string
+          lake_id?: string | null
+          notes?: string | null
+          success_rating?: number | null
+          updated_at?: string
+          user_id: string
+          water_temperature?: number | null
+          weather_conditions?: string | null
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          fish_caught?: string | null
+          fly_used?: string | null
+          id?: string
+          lake_id?: string | null
+          notes?: string | null
+          success_rating?: number | null
+          updated_at?: string
+          user_id?: string
+          water_temperature?: number | null
+          weather_conditions?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fishing_logs_lake_id_fkey"
+            columns: ["lake_id"]
+            isOneToOne: false
+            referencedRelation: "lakes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lakes: {
+        Row: {
+          best_season: string | null
+          created_at: string
+          description: string | null
+          fish_species: string[] | null
+          id: string
+          image_url: string | null
+          latitude: number | null
+          location: string
+          longitude: number | null
+          name: string
+        }
+        Insert: {
+          best_season?: string | null
+          created_at?: string
+          description?: string | null
+          fish_species?: string[] | null
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          location: string
+          longitude?: number | null
+          name: string
+        }
+        Update: {
+          best_season?: string | null
+          created_at?: string
+          description?: string | null
+          fish_species?: string[] | null
+          id?: string
+          image_url?: string | null
+          latitude?: number | null
+          location?: string
+          longitude?: number | null
+          name?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
