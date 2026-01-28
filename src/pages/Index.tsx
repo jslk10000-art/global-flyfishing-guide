@@ -1,15 +1,44 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { LakeCard } from '@/components/LakeCard';
 import { WeatherWidget } from '@/components/WeatherWidget';
+import { LocationSearch } from '@/components/LocationSearch';
 import { Button } from '@/components/ui/button';
 import { useLakes } from '@/hooks/useLakes';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Fish, MapPin, Sparkles, BookOpen, ArrowRight } from 'lucide-react';
+import { Fish, MapPin, Sparkles, BookOpen, ArrowRight, Globe } from 'lucide-react';
 
 export default function Index() {
   const { data: lakes, isLoading } = useLakes();
   const featuredLakes = lakes?.slice(0, 3);
+  const navigate = useNavigate();
+
+  const [selectedLocation, setSelectedLocation] = useState<{
+    name: string;
+    latitude: number;
+    longitude: number;
+    country: string;
+    admin1?: string;
+  } | null>(null);
+
+  const handleLocationSelect = (location: typeof selectedLocation) => {
+    setSelectedLocation(location);
+  };
+
+  const goToRecommendations = () => {
+    if (selectedLocation) {
+      const params = new URLSearchParams({
+        location: selectedLocation.name,
+        lat: selectedLocation.latitude.toString(),
+        lng: selectedLocation.longitude.toString(),
+        country: selectedLocation.country,
+      });
+      navigate(`/recommendations?${params.toString()}`);
+    } else {
+      navigate('/recommendations');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -24,25 +53,36 @@ export default function Index() {
         
         <div className="container relative">
           <div className="max-w-3xl">
+            <div className="flex items-center gap-2 text-primary mb-4">
+              <Globe className="h-5 w-5" />
+              <span className="text-sm font-medium">Works anywhere in the world</span>
+            </div>
             <h1 className="font-display text-4xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
-              Discover Colorado's
-              <span className="text-primary block">Best Fly Fishing</span>
+              Your Lake
+              <span className="text-primary block">Fly Fishing Guide</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed">
-              Find the perfect lake, get AI-powered fly recommendations, and log your catches. 
-              Your complete guide to fly fishing in the Centennial State.
+              Search any lake or river worldwide. Get AI-powered fly recommendations, 
+              real-time weather, and log your catches.
             </p>
+
+            {/* Location Search */}
+            <div className="mb-6 max-w-lg">
+              <LocationSearch 
+                onLocationSelect={handleLocationSelect}
+                placeholder="Search any lake, river, or destination..."
+              />
+            </div>
+
             <div className="flex flex-wrap gap-4">
+              <Button size="lg" className="gap-2" onClick={goToRecommendations}>
+                <Sparkles className="h-4 w-4" />
+                {selectedLocation ? `Get Flies for ${selectedLocation.name}` : 'Get Fly Recommendations'}
+              </Button>
               <Link to="/lakes">
-                <Button size="lg" className="gap-2">
-                  <MapPin className="h-4 w-4" />
-                  Explore Lakes
-                </Button>
-              </Link>
-              <Link to="/recommendations">
                 <Button size="lg" variant="outline" className="gap-2">
-                  <Sparkles className="h-4 w-4" />
-                  Get Fly Recommendations
+                  <MapPin className="h-4 w-4" />
+                  Browse Saved Lakes
                 </Button>
               </Link>
             </div>
@@ -56,11 +96,11 @@ export default function Index() {
           <div className="grid gap-8 md:grid-cols-3">
             <div className="flex flex-col items-center text-center p-6">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-water-light mb-4">
-                <MapPin className="h-7 w-7 text-water" />
+                <Globe className="h-7 w-7 text-water" />
               </div>
-              <h3 className="font-display text-xl font-semibold mb-2">Find Fishing Spots</h3>
+              <h3 className="font-display text-xl font-semibold mb-2">Fish Anywhere</h3>
               <p className="text-muted-foreground">
-                Browse Colorado's best lakes and rivers with detailed information and species guides.
+                Search any lake or river in the world with real-time weather and conditions.
               </p>
             </div>
             <div className="flex flex-col items-center text-center p-6">
@@ -90,8 +130,8 @@ export default function Index() {
         <div className="container">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="font-display text-2xl md:text-3xl font-bold">Popular Fishing Spots</h2>
-              <p className="text-muted-foreground">Discover top-rated locations</p>
+              <h2 className="font-display text-2xl md:text-3xl font-bold">Saved Fishing Spots</h2>
+              <p className="text-muted-foreground">Popular locations from the community</p>
             </div>
             <Link to="/lakes">
               <Button variant="ghost" className="gap-1">
@@ -122,12 +162,16 @@ export default function Index() {
           <div className="grid gap-8 lg:grid-cols-2 items-center">
             <div>
               <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">
-                Current Conditions
+                Real-Time Weather
               </h2>
               <p className="text-muted-foreground mb-6">
-                Check the weather before you head out to maximize your success on the water.
+                Get live weather conditions for any location to maximize your success on the water.
               </p>
-              <WeatherWidget locationName="Denver, CO" />
+              <WeatherWidget 
+                latitude={selectedLocation?.latitude} 
+                longitude={selectedLocation?.longitude}
+                locationName={selectedLocation?.name}
+              />
             </div>
             <div className="bg-card rounded-xl p-8 border shadow-lg">
               <Fish className="h-12 w-12 text-primary mb-4" />
@@ -146,7 +190,7 @@ export default function Index() {
       {/* Footer */}
       <footer className="py-8 border-t">
         <div className="container text-center text-sm text-muted-foreground">
-          <p>© 2024 Colorado Fly Fisher. Made with ❤️ for fly fishing enthusiasts.</p>
+          <p>© {new Date().getFullYear()} Your Lake Fly Fishing Guide. Made with ❤️ for fly fishing enthusiasts worldwide.</p>
         </div>
       </footer>
     </div>

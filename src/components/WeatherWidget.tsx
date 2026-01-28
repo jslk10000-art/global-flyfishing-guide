@@ -1,41 +1,12 @@
-import { Cloud, Droplets, Wind, Sun, CloudRain, Snowflake, ThermometerSun } from 'lucide-react';
+import { Cloud, Droplets, Wind, Sun, CloudRain, Snowflake, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState, useEffect } from 'react';
-import { WeatherData } from '@/types/database';
+import { fetchRealTimeWeather, RealTimeWeather } from '@/services/weatherService';
 
 interface WeatherWidgetProps {
   latitude?: number;
   longitude?: number;
   locationName?: string;
-}
-
-// Simple weather simulation based on location and date
-function getSimulatedWeather(lat?: number, lng?: number): WeatherData {
-  const month = new Date().getMonth();
-  const hour = new Date().getHours();
-  
-  // Base temperature for Colorado (varies by season)
-  const seasonTemp: Record<number, number> = {
-    0: 32, 1: 38, 2: 45, 3: 52, 4: 60, 5: 72,
-    6: 78, 7: 76, 8: 68, 9: 55, 10: 42, 11: 34,
-  };
-  
-  const baseTemp = seasonTemp[month] || 55;
-  const variation = Math.sin(hour / 24 * Math.PI * 2) * 10;
-  const altitudeAdjust = lat && lat > 39 ? -5 : 0;
-  
-  const temperature = Math.round(baseTemp + variation + altitudeAdjust + (Math.random() * 6 - 3));
-  
-  const conditions = ['Sunny', 'Partly Cloudy', 'Cloudy', 'Light Rain', 'Clear'];
-  const condition = conditions[Math.floor(Math.random() * conditions.length)];
-  
-  return {
-    temperature,
-    condition,
-    humidity: Math.round(30 + Math.random() * 40),
-    windSpeed: Math.round(5 + Math.random() * 15),
-    icon: condition,
-  };
 }
 
 function WeatherIcon({ condition }: { condition: string }) {
@@ -58,19 +29,68 @@ function WeatherIcon({ condition }: { condition: string }) {
 }
 
 export function WeatherWidget({ latitude, longitude, locationName }: WeatherWidgetProps) {
-  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [weather, setWeather] = useState<RealTimeWeather | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simulate fetching weather data
-    const data = getSimulatedWeather(latitude, longitude);
-    setWeather(data);
+    if (!latitude || !longitude) {
+      setWeather(null);
+      return;
+    }
+
+    const fetchWeather = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await fetchRealTimeWeather(latitude, longitude);
+        setWeather(data);
+      } catch (err) {
+        console.error('Weather fetch error:', err);
+        setError('Unable to load weather');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWeather();
   }, [latitude, longitude]);
 
-  if (!weather) {
+  if (!latitude || !longitude) {
     return (
-      <Card className="animate-pulse">
+      <Card className="bg-gradient-to-br from-water-light to-card">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">Loading Weather...</CardTitle>
+          <CardTitle className="text-sm font-medium text-muted-foreground">
+            Weather
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">Select a location to see weather</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Card className="bg-gradient-to-br from-water-light to-card">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Loading Weather...
+          </CardTitle>
+        </CardHeader>
+      </Card>
+    );
+  }
+
+  if (error || !weather) {
+    return (
+      <Card className="bg-gradient-to-br from-water-light to-card">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-medium text-muted-foreground">
+            Weather Unavailable
+          </CardTitle>
         </CardHeader>
       </Card>
     );
@@ -90,7 +110,7 @@ export function WeatherWidget({ latitude, longitude, locationName }: WeatherWidg
             <div>
               <div className="flex items-baseline gap-1">
                 <span className="text-3xl font-bold">{weather.temperature}</span>
-                <span className="text-lg text-muted-foreground">°F</span>
+                <span className="text-lg text-muted-foreground">°{weather.temperatureUnit}</span>
               </div>
               <p className="text-sm text-muted-foreground">{weather.condition}</p>
             </div>
