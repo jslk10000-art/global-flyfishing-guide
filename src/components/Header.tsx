@@ -28,8 +28,8 @@ export function Header() {
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary">
             <Fish className="h-6 w-6 text-primary-foreground" />
           </div>
-          <span className="font-display text-xl font-semibold text-foreground">
-            Colorado Fly Fisher
+          <span className="font-display text-lg md:text-xl font-semibold text-foreground">
+            Your Lake Fly Fishing Guide
           </span>
         </Link>
 

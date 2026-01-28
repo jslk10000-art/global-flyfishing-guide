@@ -16,10 +16,10 @@ export default function LakesPage() {
       
       <main className="container py-8">
         <div className="mb-8">
-          <h1 className="font-display text-3xl font-bold mb-2">Colorado Fishing Spots</h1>
+          <h1 className="font-display text-3xl font-bold mb-2">Saved Fishing Spots</h1>
           <p className="text-muted-foreground flex items-center gap-1">
             <MapPin className="h-4 w-4" />
-            Discover the best lakes and rivers for fly fishing
+            Browse community locations or search anywhere using the Fly Finder
           </p>
         </div>
 

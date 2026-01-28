@@ -9,6 +9,8 @@ interface RequestBody {
   season?: string;
   targetFish?: string;
   waterTemp?: number;
+  latitude?: number;
+  longitude?: number;
 }
 
 Deno.serve(async (req) => {
@@ -18,7 +20,7 @@ Deno.serve(async (req) => {
 
   try {
     const body: RequestBody = await req.json();
-    const { lake, weather, season, targetFish, waterTemp } = body;
+    const { lake, weather, season, targetFish, waterTemp, latitude, longitude } = body;
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -26,18 +28,21 @@ Deno.serve(async (req) => {
     }
 
     const currentMonth = new Date().getMonth();
-    const currentSeason = season || getSeasonFromMonth(currentMonth);
+    const currentSeason = season || getSeasonFromMonth(currentMonth, latitude);
 
-    const prompt = `You are an expert Colorado fly fishing guide. Based on the following conditions, recommend 3-5 flies that would be most effective:
+    const prompt = `You are an expert fly fishing guide with worldwide knowledge. Based on the following conditions, recommend 3-5 flies that would be most effective:
 
-Location: ${lake || 'General Colorado waters'}
+Location: ${lake || 'Unknown location'}
+Coordinates: ${latitude && longitude ? `${latitude.toFixed(2)}°, ${longitude.toFixed(2)}°` : 'Unknown'}
 Weather: ${weather || 'Unknown'}
 Season: ${currentSeason}
-Target Fish: ${targetFish || 'Trout'}
-Water Temperature: ${waterTemp ? `${waterTemp}°F` : 'Unknown'}
+Target Fish: ${targetFish || 'Local trout or game fish'}
+Water Temperature: ${waterTemp ? `${waterTemp}°` : 'Unknown'}
+
+Consider the local fish species, typical hatches for this region and season, and current weather conditions.
 
 For each fly, provide:
-1. Name (common fly name)
+1. Name (common fly name that works internationally)
 2. Type (dry fly, nymph, streamer, emerger, or terrestrial)
 3. A brief reason why it's effective in these conditions
 4. Confidence level (high, medium, or low)
@@ -65,7 +70,7 @@ Only return the JSON array, nothing else.`;
         messages: [
           {
             role: 'system',
-            content: 'You are an expert fly fishing guide specializing in Colorado waters. Always respond with valid JSON.',
+            content: 'You are an expert fly fishing guide with worldwide knowledge of fish species, hatches, and effective fly patterns. Always respond with valid JSON.',
           },
           {
             role: 'user',
@@ -115,7 +120,17 @@ Only return the JSON array, nothing else.`;
   }
 });
 
-function getSeasonFromMonth(month: number): string {
+function getSeasonFromMonth(month: number, latitude?: number): string {
+  // Southern hemisphere has reversed seasons
+  const isSouthernHemisphere = latitude !== undefined && latitude < 0;
+  
+  if (isSouthernHemisphere) {
+    if (month >= 2 && month <= 4) return 'fall';
+    if (month >= 5 && month <= 7) return 'winter';
+    if (month >= 8 && month <= 10) return 'spring';
+    return 'summer';
+  }
+  
   if (month >= 2 && month <= 4) return 'spring';
   if (month >= 5 && month <= 7) return 'summer';
   if (month >= 8 && month <= 10) return 'fall';
