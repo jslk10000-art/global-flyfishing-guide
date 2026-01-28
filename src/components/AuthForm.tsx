@@ -60,7 +60,7 @@ export function AuthForm() {
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary">
             <Fish className="h-8 w-8 text-primary-foreground" />
           </div>
-          <CardTitle className="font-display text-2xl">Colorado Fly Fisher</CardTitle>
+          <CardTitle className="font-display text-2xl">Your Lake Fly Fishing Guide</CardTitle>
           <CardDescription>
             Sign in to save your fishing logs and get personalized recommendations.
           </CardDescription>
