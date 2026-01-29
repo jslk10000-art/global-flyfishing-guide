@@ -9,9 +9,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Plus, Star } from 'lucide-react';
+import { fishingLogSchema } from '@/lib/validations';
 
 interface FishingLogFormProps {
   onSuccess?: () => void;
+}
+
+interface FormErrors {
+  date?: string;
+  fish_caught?: string;
+  fly_used?: string;
+  weather_conditions?: string;
+  water_temperature?: string;
+  notes?: string;
+  success_rating?: string;
 }
 
 export function FishingLogForm({ onSuccess }: FishingLogFormProps) {
@@ -23,6 +34,7 @@ export function FishingLogForm({ onSuccess }: FishingLogFormProps) {
   const [waterTemp, setWaterTemp] = useState('');
   const [notes, setNotes] = useState('');
   const [rating, setRating] = useState<number>(0);
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const { data: lakes } = useLakes();
   const createLog = useCreateFishingLog();
@@ -31,16 +43,45 @@ export function FishingLogForm({ onSuccess }: FishingLogFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate with zod
+    const result = fishingLogSchema.safeParse({
+      lake_id: lakeId || undefined,
+      date,
+      fish_caught: fishCaught || undefined,
+      fly_used: flyUsed || undefined,
+      weather_conditions: weatherConditions || undefined,
+      water_temperature: waterTemp ? parseFloat(waterTemp) : undefined,
+      notes: notes || undefined,
+      success_rating: rating || undefined,
+    });
+
+    if (!result.success) {
+      const fieldErrors: FormErrors = {};
+      result.error.errors.forEach((err) => {
+        const field = err.path[0] as keyof FormErrors;
+        fieldErrors[field] = err.message;
+      });
+      setErrors(fieldErrors);
+      toast({
+        title: 'Validation Error',
+        description: 'Please check the form for errors.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setErrors({});
+
     try {
       await createLog.mutateAsync({
-        lake_id: lakeId || undefined,
-        date,
-        fish_caught: fishCaught || undefined,
-        fly_used: flyUsed || undefined,
-        weather_conditions: weatherConditions || undefined,
-        water_temperature: waterTemp ? parseFloat(waterTemp) : undefined,
-        notes: notes || undefined,
-        success_rating: rating || undefined,
+        lake_id: result.data.lake_id || undefined,
+        date: result.data.date,
+        fish_caught: result.data.fish_caught || undefined,
+        fly_used: result.data.fly_used || undefined,
+        weather_conditions: result.data.weather_conditions || undefined,
+        water_temperature: result.data.water_temperature ?? undefined,
+        notes: result.data.notes || undefined,
+        success_rating: result.data.success_rating ?? undefined,
       });
 
       toast({
@@ -124,8 +165,15 @@ export function FishingLogForm({ onSuccess }: FishingLogFormProps) {
                 id="flyUsed"
                 placeholder="e.g., Elk Hair Caddis #16"
                 value={flyUsed}
-                onChange={(e) => setFlyUsed(e.target.value)}
+                onChange={(e) => {
+                  setFlyUsed(e.target.value);
+                  if (errors.fly_used) setErrors((prev) => ({ ...prev, fly_used: undefined }));
+                }}
+                className={errors.fly_used ? 'border-destructive' : ''}
               />
+              {errors.fly_used && (
+                <p className="text-sm text-destructive">{errors.fly_used}</p>
+              )}
             </div>
           </div>
 
@@ -136,8 +184,15 @@ export function FishingLogForm({ onSuccess }: FishingLogFormProps) {
                 id="weather"
                 placeholder="e.g., Partly cloudy, 65°F"
                 value={weatherConditions}
-                onChange={(e) => setWeatherConditions(e.target.value)}
+                onChange={(e) => {
+                  setWeatherConditions(e.target.value);
+                  if (errors.weather_conditions) setErrors((prev) => ({ ...prev, weather_conditions: undefined }));
+                }}
+                className={errors.weather_conditions ? 'border-destructive' : ''}
               />
+              {errors.weather_conditions && (
+                <p className="text-sm text-destructive">{errors.weather_conditions}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -148,8 +203,15 @@ export function FishingLogForm({ onSuccess }: FishingLogFormProps) {
                 step="0.1"
                 placeholder="e.g., 52"
                 value={waterTemp}
-                onChange={(e) => setWaterTemp(e.target.value)}
+                onChange={(e) => {
+                  setWaterTemp(e.target.value);
+                  if (errors.water_temperature) setErrors((prev) => ({ ...prev, water_temperature: undefined }));
+                }}
+                className={errors.water_temperature ? 'border-destructive' : ''}
               />
+              {errors.water_temperature && (
+                <p className="text-sm text-destructive">{errors.water_temperature}</p>
+              )}
             </div>
           </div>
 
@@ -181,9 +243,16 @@ export function FishingLogForm({ onSuccess }: FishingLogFormProps) {
               id="notes"
               placeholder="Any additional notes about your trip..."
               value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              onChange={(e) => {
+                setNotes(e.target.value);
+                if (errors.notes) setErrors((prev) => ({ ...prev, notes: undefined }));
+              }}
               rows={3}
+              className={errors.notes ? 'border-destructive' : ''}
             />
+            {errors.notes && (
+              <p className="text-sm text-destructive">{errors.notes}</p>
+            )}
           </div>
 
           <Button type="submit" className="w-full" disabled={createLog.isPending}>

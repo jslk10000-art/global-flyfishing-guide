@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { FlyRecommendationCard } from '@/components/FlyRecommendationCard';
 import { WeatherWidget } from '@/components/WeatherWidget';
@@ -13,7 +13,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { FlyRecommendation } from '@/types/database';
 import { supabase } from '@/integrations/supabase/client';
 import { fetchRealTimeWeather, RealTimeWeather } from '@/services/weatherService';
-import { Sparkles, Loader2, RefreshCw, Globe } from 'lucide-react';
+import { Sparkles, Loader2, RefreshCw, Globe, LogIn } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface SelectedLocation {
   name: string;
@@ -25,6 +26,7 @@ interface SelectedLocation {
 
 export default function RecommendationsPage() {
   const [searchParams] = useSearchParams();
+  const { user, loading: authLoading } = useAuth();
   
   // Initialize from URL params
   const initialLocation = searchParams.get('location');
@@ -49,6 +51,30 @@ export default function RecommendationsPage() {
   const [recommendations, setRecommendations] = useState<FlyRecommendation[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+
+  // Show auth required message if not logged in
+  if (!authLoading && !user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container py-8">
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <Sparkles className="h-16 w-16 text-muted-foreground/50 mb-4" />
+            <h1 className="font-display text-2xl font-bold mb-2">Sign in to use AI Fly Finder</h1>
+            <p className="text-muted-foreground mb-6">
+              Get personalized fly recommendations powered by AI for any location worldwide.
+            </p>
+            <Link to="/auth">
+              <Button size="lg">
+                <LogIn className="h-4 w-4 mr-2" />
+                Sign In
+              </Button>
+            </Link>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   // Fetch weather when location changes
   useEffect(() => {
