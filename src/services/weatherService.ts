@@ -71,25 +71,56 @@ interface GeocodingResult {
 }
 
 export async function geocodeLocation(query: string): Promise<GeocodingResult[]> {
-  const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`;
-  
-  const response = await fetch(url);
-  
-  if (!response.ok) {
-    throw new Error('Failed to geocode location');
+  // Try multiple search variations to better find water bodies
+  const searchVariations = [
+    query,
+    // If query doesn't already contain water-related terms, try adding them
+    ...(!/lake|reservoir|river|pond|creek|stream/i.test(query) 
+      ? [`${query} lake`, `${query} reservoir`] 
+      : []),
+  ];
+
+  const allResults: GeocodingResult[] = [];
+  const seenCoords = new Set<string>();
+
+  for (const searchQuery of searchVariations) {
+    try {
+      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(searchQuery)}&count=10&language=en&format=json`;
+      
+      const response = await fetch(url);
+      
+      if (!response.ok) continue;
+
+      const data = await response.json();
+      
+      if (data.results) {
+        for (const r of data.results) {
+          // Deduplicate by coordinates (rounded to 2 decimals)
+          const coordKey = `${r.latitude.toFixed(2)},${r.longitude.toFixed(2)}`;
+          if (!seenCoords.has(coordKey)) {
+            seenCoords.add(coordKey);
+            allResults.push({
+              name: r.name,
+              latitude: r.latitude,
+              longitude: r.longitude,
+              country: r.country,
+              admin1: r.admin1,
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.error(`Geocoding error for "${searchQuery}":`, error);
+    }
   }
 
-  const data = await response.json();
-  
-  if (!data.results) {
-    return [];
-  }
+  // Sort results to prioritize water bodies in the name
+  const waterKeywords = /lake|reservoir|river|pond|creek|stream|bay|harbor/i;
+  allResults.sort((a, b) => {
+    const aIsWater = waterKeywords.test(a.name) ? 0 : 1;
+    const bIsWater = waterKeywords.test(b.name) ? 0 : 1;
+    return aIsWater - bIsWater;
+  });
 
-  return data.results.map((r: any) => ({
-    name: r.name,
-    latitude: r.latitude,
-    longitude: r.longitude,
-    country: r.country,
-    admin1: r.admin1,
-  }));
+  return allResults.slice(0, 8);
 }

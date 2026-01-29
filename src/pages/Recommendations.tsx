@@ -15,33 +15,31 @@ import { supabase } from '@/integrations/supabase/client';
 import { fetchRealTimeWeather, RealTimeWeather } from '@/services/weatherService';
 import { Sparkles, Loader2, RefreshCw, Globe, LogIn } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-
-interface SelectedLocation {
-  name: string;
-  latitude: number;
-  longitude: number;
-  country: string;
-  admin1?: string;
-}
+import { useLocation, SelectedLocation } from '@/hooks/useLocationContext';
 
 export default function RecommendationsPage() {
   const [searchParams] = useSearchParams();
   const { user, loading: authLoading } = useAuth();
+  const { location: contextLocation, setLocation: setContextLocation } = useLocation();
   
-  // Initialize from URL params
+  // Initialize from URL params or context
   const initialLocation = searchParams.get('location');
   const initialLat = searchParams.get('lat');
   const initialLng = searchParams.get('lng');
   const initialCountry = searchParams.get('country');
 
-  const [location, setLocation] = useState<SelectedLocation | null>(
-    initialLocation && initialLat && initialLng ? {
-      name: initialLocation,
-      latitude: parseFloat(initialLat),
-      longitude: parseFloat(initialLng),
-      country: initialCountry || '',
-    } : null
-  );
+  // Use URL params if present, otherwise fall back to context
+  const [location, setLocation] = useState<SelectedLocation | null>(() => {
+    if (initialLocation && initialLat && initialLng) {
+      return {
+        name: initialLocation,
+        latitude: parseFloat(initialLat),
+        longitude: parseFloat(initialLng),
+        country: initialCountry || '',
+      };
+    }
+    return contextLocation;
+  });
 
   const [weather, setWeather] = useState<RealTimeWeather | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
@@ -98,6 +96,13 @@ export default function RecommendationsPage() {
 
     fetchWeather();
   }, [location]);
+
+  // Sync location to context whenever it changes
+  useEffect(() => {
+    if (location) {
+      setContextLocation(location);
+    }
+  }, [location, setContextLocation]);
 
   const handleLocationSelect = (loc: SelectedLocation) => {
     setLocation(loc);
