@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { LakeCard } from '@/components/LakeCard';
@@ -6,6 +5,7 @@ import { WeatherWidget } from '@/components/WeatherWidget';
 import { LocationSearch } from '@/components/LocationSearch';
 import { Button } from '@/components/ui/button';
 import { useLakes } from '@/hooks/useLakes';
+import { useLocation } from '@/hooks/useLocationContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Fish, MapPin, Sparkles, BookOpen, ArrowRight, Globe } from 'lucide-react';
 
@@ -13,17 +13,16 @@ export default function Index() {
   const { data: lakes, isLoading } = useLakes();
   const featuredLakes = lakes?.slice(0, 3);
   const navigate = useNavigate();
+  const { location: selectedLocation, setLocation } = useLocation();
 
-  const [selectedLocation, setSelectedLocation] = useState<{
+  const handleLocationSelect = (location: {
     name: string;
     latitude: number;
     longitude: number;
     country: string;
     admin1?: string;
-  } | null>(null);
-
-  const handleLocationSelect = (location: typeof selectedLocation) => {
-    setSelectedLocation(location);
+  }) => {
+    setLocation(location);
   };
 
   const goToRecommendations = () => {
@@ -71,6 +70,7 @@ export default function Index() {
               <LocationSearch 
                 onLocationSelect={handleLocationSelect}
                 placeholder="Search any lake, river, or destination..."
+                initialValue={selectedLocation ? `${selectedLocation.name}, ${selectedLocation.country}` : ''}
               />
             </div>
 
