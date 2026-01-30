@@ -61,7 +61,7 @@ export async function fetchRealTimeWeather(
   };
 }
 
-// Geocoding service to get coordinates from location name
+// Geocoding service using OpenStreetMap Nominatim (free, excellent POI coverage)
 interface GeocodingResult {
   name: string;
   latitude: number;
@@ -71,51 +71,26 @@ interface GeocodingResult {
 }
 
 export async function geocodeLocation(query: string): Promise<GeocodingResult[]> {
-  // Try multiple search variations to better find water bodies
-  const searchVariations = [
-    query,
-    // If query doesn't already contain water-related terms, try adding them
-    ...(!/lake|reservoir|river|pond|creek|stream/i.test(query) 
-      ? [`${query} lake`, `${query} reservoir`] 
-      : []),
-  ];
-
+  // Use Nominatim for primary search - much better POI/lake coverage
   const allResults: GeocodingResult[] = [];
   const seenCoords = new Set<string>();
 
-  for (const searchQuery of searchVariations) {
-    try {
-      const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(searchQuery)}&count=10&language=en&format=json`;
-      
-      const response = await fetch(url);
-      
-      if (!response.ok) continue;
+  try {
+    // Primary search with the query as-is
+    const nominatimResults = await searchNominatim(query);
+    addUniqueResults(nominatimResults, allResults, seenCoords);
 
-      const data = await response.json();
-      
-      if (data.results) {
-        for (const r of data.results) {
-          // Deduplicate by coordinates (rounded to 2 decimals)
-          const coordKey = `${r.latitude.toFixed(2)},${r.longitude.toFixed(2)}`;
-          if (!seenCoords.has(coordKey)) {
-            seenCoords.add(coordKey);
-            allResults.push({
-              name: r.name,
-              latitude: r.latitude,
-              longitude: r.longitude,
-              country: r.country,
-              admin1: r.admin1,
-            });
-          }
-        }
-      }
-    } catch (error) {
-      console.error(`Geocoding error for "${searchQuery}":`, error);
+    // If query doesn't contain water-related terms, also search with "lake" appended
+    if (!/lake|reservoir|river|pond|creek|stream|loch|llyn/i.test(query) && allResults.length < 5) {
+      const lakeResults = await searchNominatim(`${query} lake`);
+      addUniqueResults(lakeResults, allResults, seenCoords);
     }
+  } catch (error) {
+    console.error('Nominatim geocoding error:', error);
   }
 
-  // Sort results to prioritize water bodies in the name
-  const waterKeywords = /lake|reservoir|river|pond|creek|stream|bay|harbor/i;
+  // Sort results to prioritize water bodies
+  const waterKeywords = /lake|reservoir|river|pond|creek|stream|bay|harbor|loch|llyn|water/i;
   allResults.sort((a, b) => {
     const aIsWater = waterKeywords.test(a.name) ? 0 : 1;
     const bIsWater = waterKeywords.test(b.name) ? 0 : 1;
@@ -123,4 +98,42 @@ export async function geocodeLocation(query: string): Promise<GeocodingResult[]>
   });
 
   return allResults.slice(0, 8);
+}
+
+async function searchNominatim(query: string): Promise<GeocodingResult[]> {
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=10&accept-language=en`;
+  
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': 'FishingCompanionApp/1.0'
+    }
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Nominatim API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  
+  return data.map((item: any) => ({
+    name: item.name || item.display_name.split(',')[0],
+    latitude: parseFloat(item.lat),
+    longitude: parseFloat(item.lon),
+    country: item.address?.country || '',
+    admin1: item.address?.state || item.address?.county || item.address?.region || undefined,
+  }));
+}
+
+function addUniqueResults(
+  newResults: GeocodingResult[],
+  allResults: GeocodingResult[],
+  seenCoords: Set<string>
+) {
+  for (const result of newResults) {
+    const coordKey = `${result.latitude.toFixed(2)},${result.longitude.toFixed(2)}`;
+    if (!seenCoords.has(coordKey)) {
+      seenCoords.add(coordKey);
+      allResults.push(result);
+    }
+  }
 }
