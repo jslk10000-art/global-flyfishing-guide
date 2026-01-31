@@ -4,6 +4,7 @@ import { Header } from '@/components/Header';
 import { FlyRecommendationCard } from '@/components/FlyRecommendationCard';
 import { WeatherWidget } from '@/components/WeatherWidget';
 import { LocationSearch } from '@/components/LocationSearch';
+import { SaveLocationButton } from '@/components/SaveLocationButton';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -190,18 +191,24 @@ export default function RecommendationsPage() {
                     onLocationSelect={handleLocationSelect}
                     placeholder="Search any lake or river..."
                     initialValue={location ? `${location.name}, ${location.country}` : ''}
+                    showSaveButton={false}
                   />
                 </div>
 
                 {location && (
                   <div className="p-3 bg-primary/10 rounded-lg text-sm">
-                    <p className="font-medium">{location.name}</p>
-                    <p className="text-muted-foreground text-xs">
-                      {location.admin1 && `${location.admin1}, `}{location.country}
-                    </p>
-                    <p className="text-muted-foreground text-xs mt-1">
-                      {location.latitude.toFixed(4)}°, {location.longitude.toFixed(4)}°
-                    </p>
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="font-medium">{location.name}</p>
+                        <p className="text-muted-foreground text-xs">
+                          {location.admin1 && `${location.admin1}, `}{location.country}
+                        </p>
+                        <p className="text-muted-foreground text-xs mt-1">
+                          {location.latitude.toFixed(4)}°, {location.longitude.toFixed(4)}°
+                        </p>
+                      </div>
+                      <SaveLocationButton location={location} variant="icon" />
+                    </div>
                   </div>
                 )}
 

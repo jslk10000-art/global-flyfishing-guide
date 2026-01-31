@@ -3,17 +3,27 @@ import { Header } from '@/components/Header';
 import { LakeCard } from '@/components/LakeCard';
 import { WeatherWidget } from '@/components/WeatherWidget';
 import { LocationSearch } from '@/components/LocationSearch';
+import { SavedLocationsList } from '@/components/SavedLocationsList';
 import { Button } from '@/components/ui/button';
 import { useLakes } from '@/hooks/useLakes';
 import { useLocation } from '@/hooks/useLocationContext';
+import { useAuth } from '@/hooks/useAuth';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Fish, MapPin, Sparkles, BookOpen, ArrowRight, Globe } from 'lucide-react';
+import { Fish, MapPin, Sparkles, BookOpen, ArrowRight, Globe, Heart } from 'lucide-react';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 
 export default function Index() {
   const { data: lakes, isLoading } = useLakes();
   const featuredLakes = lakes?.slice(0, 3);
   const navigate = useNavigate();
   const { location: selectedLocation, setLocation } = useLocation();
+  const { user } = useAuth();
 
   const handleLocationSelect = (location: {
     name: string;
@@ -71,6 +81,7 @@ export default function Index() {
                 onLocationSelect={handleLocationSelect}
                 placeholder="Search any lake, river, or destination..."
                 initialValue={selectedLocation ? `${selectedLocation.name}, ${selectedLocation.country}` : ''}
+                selectedLocation={selectedLocation}
               />
             </div>
 
@@ -79,10 +90,28 @@ export default function Index() {
                 <Sparkles className="h-4 w-4" />
                 {selectedLocation ? `Get Flies for ${selectedLocation.name}` : 'Get Fly Recommendations'}
               </Button>
+              {user && (
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button size="lg" variant="outline" className="gap-2">
+                      <Heart className="h-4 w-4" />
+                      My Saved Spots
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent>
+                    <SheetHeader>
+                      <SheetTitle>Saved Fishing Spots</SheetTitle>
+                    </SheetHeader>
+                    <div className="mt-6">
+                      <SavedLocationsList />
+                    </div>
+                  </SheetContent>
+                </Sheet>
+              )}
               <Link to="/lakes">
                 <Button size="lg" variant="outline" className="gap-2">
                   <MapPin className="h-4 w-4" />
-                  Browse Saved Lakes
+                  Browse Community Lakes
                 </Button>
               </Link>
             </div>

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { geocodeLocation } from '@/services/weatherService';
 import { useDebounce } from '@/hooks/useDebounce';
+import { SaveLocationButton } from '@/components/SaveLocationButton';
 
 interface LocationResult {
   name: string;
@@ -18,15 +19,30 @@ interface LocationSearchProps {
   onLocationSelect: (location: LocationResult) => void;
   placeholder?: string;
   initialValue?: string;
+  showSaveButton?: boolean;
+  selectedLocation?: LocationResult | null;
 }
 
-export function LocationSearch({ onLocationSelect, placeholder = "Search any lake or location...", initialValue = "" }: LocationSearchProps) {
+export function LocationSearch({ 
+  onLocationSelect, 
+  placeholder = "Search any lake or location...", 
+  initialValue = "",
+  showSaveButton = true,
+  selectedLocation
+}: LocationSearchProps) {
   const [query, setQuery] = useState(initialValue);
   const [results, setResults] = useState<LocationResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
   
   const debouncedQuery = useDebounce(query, 300);
+
+  // Sync query with initialValue when it changes
+  useEffect(() => {
+    if (initialValue) {
+      setQuery(initialValue);
+    }
+  }, [initialValue]);
 
   useEffect(() => {
     if (debouncedQuery.length < 2) {
@@ -59,21 +75,26 @@ export function LocationSearch({ onLocationSelect, placeholder = "Search any lak
 
   return (
     <div className="relative">
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          type="text"
-          placeholder={placeholder}
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setShowResults(true);
-          }}
-          onFocus={() => results.length > 0 && setShowResults(true)}
-          className="pl-10 pr-10"
-        />
-        {loading && (
-          <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground animate-spin" />
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder={placeholder}
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setShowResults(true);
+            }}
+            onFocus={() => results.length > 0 && setShowResults(true)}
+            className="pl-10 pr-10"
+          />
+          {loading && (
+            <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground animate-spin" />
+          )}
+        </div>
+        {showSaveButton && selectedLocation && (
+          <SaveLocationButton location={selectedLocation} variant="icon" />
         )}
       </div>
 
