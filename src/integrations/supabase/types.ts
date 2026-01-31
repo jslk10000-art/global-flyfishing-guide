@@ -133,6 +133,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_saved_locations: {
+        Row: {
+          admin1: string | null
+          country: string
+          created_at: string
+          id: string
+          latitude: number
+          longitude: number
+          name: string
+          user_id: string
+        }
+        Insert: {
+          admin1?: string | null
+          country: string
+          created_at?: string
+          id?: string
+          latitude: number
+          longitude: number
+          name: string
+          user_id: string
+        }
+        Update: {
+          admin1?: string | null
+          country?: string
+          created_at?: string
+          id?: string
+          latitude?: number
+          longitude?: number
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
