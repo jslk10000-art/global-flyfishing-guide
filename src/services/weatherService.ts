@@ -80,10 +80,18 @@ export async function geocodeLocation(query: string): Promise<GeocodingResult[]>
     const nominatimResults = await searchNominatim(query);
     addUniqueResults(nominatimResults, allResults, seenCoords);
 
-    // If query doesn't contain water-related terms, also search with "lake" appended
-    if (!/lake|reservoir|river|pond|creek|stream|loch|llyn/i.test(query) && allResults.length < 5) {
-      const lakeResults = await searchNominatim(`${query} lake`);
+    // If query doesn't contain water-related terms, also search with water body terms
+    if (!/lake|reservoir|river|pond|creek|stream|loch|llyn/i.test(query)) {
+      // Search for multiple water body types in parallel
+      const [lakeResults, reservoirResults, riverResults] = await Promise.all([
+        searchNominatim(`${query} lake`).catch(() => []),
+        searchNominatim(`${query} reservoir`).catch(() => []),
+        searchNominatim(`${query} river`).catch(() => []),
+      ]);
+      
       addUniqueResults(lakeResults, allResults, seenCoords);
+      addUniqueResults(reservoirResults, allResults, seenCoords);
+      addUniqueResults(riverResults, allResults, seenCoords);
     }
   } catch (error) {
     console.error('Nominatim geocoding error:', error);
@@ -97,7 +105,7 @@ export async function geocodeLocation(query: string): Promise<GeocodingResult[]>
     return aIsWater - bIsWater;
   });
 
-  return allResults.slice(0, 8);
+  return allResults.slice(0, 10);
 }
 
 async function searchNominatim(query: string): Promise<GeocodingResult[]> {
