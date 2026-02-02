@@ -1,15 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
-import { LakeCard } from '@/components/LakeCard';
 import { WeatherWidget } from '@/components/WeatherWidget';
 import { LocationSearch } from '@/components/LocationSearch';
 import { SavedLocationsList } from '@/components/SavedLocationsList';
 import { Button } from '@/components/ui/button';
-import { useLakes } from '@/hooks/useLakes';
 import { useLocation } from '@/hooks/useLocationContext';
 import { useAuth } from '@/hooks/useAuth';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Fish, MapPin, Sparkles, BookOpen, ArrowRight, Globe, Heart } from 'lucide-react';
+import { Fish, MapPin, Sparkles, BookOpen, Globe, Heart } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -19,8 +16,6 @@ import {
 } from '@/components/ui/sheet';
 
 export default function Index() {
-  const { data: lakes, isLoading } = useLakes();
-  const featuredLakes = lakes?.slice(0, 3);
   const navigate = useNavigate();
   const { location: selectedLocation, setLocation } = useLocation();
   const { user } = useAuth();
@@ -154,36 +149,6 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Featured Lakes */}
-      <section className="py-16">
-        <div className="container">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="font-display text-2xl md:text-3xl font-bold">Saved Fishing Spots</h2>
-              <p className="text-muted-foreground">Popular locations from the community</p>
-            </div>
-            <Link to="/lakes">
-              <Button variant="ghost" className="gap-1">
-                View All <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-
-          {isLoading ? (
-            <div className="grid gap-6 md:grid-cols-3">
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-72" />
-              ))}
-            </div>
-          ) : (
-            <div className="grid gap-6 md:grid-cols-3">
-              {featuredLakes?.map((lake) => (
-                <LakeCard key={lake.id} lake={lake} />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
 
       {/* Weather + CTA */}
       <section className="py-16 bg-gradient-to-br from-water-light/50 to-background">

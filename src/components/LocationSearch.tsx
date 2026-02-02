@@ -99,24 +99,37 @@ export function LocationSearch({
       </div>
 
       {showResults && results.length > 0 && (
-        <Card className="absolute z-50 mt-1 w-full shadow-lg">
+        <Card className="absolute z-50 mt-1 w-full shadow-lg max-h-80 overflow-y-auto">
           <CardContent className="p-1">
-            {results.map((location, index) => (
-              <Button
-                key={`${location.latitude}-${location.longitude}-${index}`}
-                variant="ghost"
-                className="w-full justify-start gap-2 h-auto py-2 px-3"
-                onClick={() => handleSelect(location)}
-              >
-                <MapPin className="h-4 w-4 text-primary shrink-0" />
-                <div className="text-left">
-                  <div className="font-medium">{location.name}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {location.admin1 && `${location.admin1}, `}{location.country}
+            <div className="px-3 py-1.5 text-xs font-medium text-muted-foreground border-b mb-1">
+              Select a fishing spot
+            </div>
+            {results.map((location, index) => {
+              const isWaterBody = /lake|reservoir|river|pond|creek|stream|bay|loch|llyn/i.test(location.name);
+              return (
+                <Button
+                  key={`${location.latitude}-${location.longitude}-${index}`}
+                  variant="ghost"
+                  className="w-full justify-start gap-2 h-auto py-2.5 px-3 hover:bg-primary/5"
+                  onClick={() => handleSelect(location)}
+                >
+                  <MapPin className={`h-4 w-4 shrink-0 ${isWaterBody ? 'text-water' : 'text-muted-foreground'}`} />
+                  <div className="text-left flex-1">
+                    <div className="font-medium flex items-center gap-2">
+                      {location.name}
+                      {isWaterBody && (
+                        <span className="text-[10px] bg-water/10 text-water px-1.5 py-0.5 rounded">
+                          Water
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {location.admin1 && `${location.admin1}, `}{location.country}
+                    </div>
                   </div>
-                </div>
-              </Button>
-            ))}
+                </Button>
+              );
+            })}
           </CardContent>
         </Card>
       )}
