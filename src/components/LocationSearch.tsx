@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { MapPin, Search, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -6,7 +6,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { geocodeLocation } from '@/services/weatherService';
 import { useDebounce } from '@/hooks/useDebounce';
 import { SaveLocationButton } from '@/components/SaveLocationButton';
-
 interface LocationResult {
   name: string;
   latitude: number;
@@ -34,7 +33,20 @@ export function LocationSearch({
   const [results, setResults] = useState<LocationResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setShowResults(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const debouncedQuery = useDebounce(query, 300);
 
   // Sync query with initialValue when it changes
@@ -69,12 +81,13 @@ export function LocationSearch({
 
   const handleSelect = (location: LocationResult) => {
     setQuery(`${location.name}${location.admin1 ? `, ${location.admin1}` : ''}, ${location.country}`);
+    setResults([]); // Clear results to prevent re-showing on focus
     setShowResults(false);
     onLocationSelect(location);
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       <div className="flex gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
