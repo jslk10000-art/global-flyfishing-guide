@@ -11,6 +11,7 @@ interface RequestBody {
   season?: string;
   targetFish?: string;
   waterTemp?: number;
+  airTemperature?: number;
   latitude?: number;
   longitude?: number;
 }
@@ -58,6 +59,13 @@ Deno.serve(async (req) => {
 
     const currentMonth = new Date().getMonth();
     const currentSeason = season || getSeasonFromMonth(currentMonth, latitude);
+    
+    // Estimate water temperature based on air temp, season, and latitude
+    const estimatedWaterTemp = waterTemp || estimateWaterTemperature(
+      body.airTemperature,
+      currentSeason,
+      latitude
+    );
 
     const prompt = `You are an expert fly fishing guide with worldwide knowledge. Based on the following conditions, recommend 3-5 flies that would be most effective:
 
@@ -66,7 +74,7 @@ Coordinates: ${latitude && longitude ? `${latitude.toFixed(2)}°, ${longitude.to
 Weather: ${weather || 'Unknown'}
 Season: ${currentSeason}
 Target Fish: ${targetFish || 'Local trout or game fish'}
-Water Temperature: ${waterTemp ? `${waterTemp}°` : 'Unknown'}
+Water Temperature: ${estimatedWaterTemp ? `${estimatedWaterTemp}°` : 'Unknown'}
 
 Consider the local fish species, typical hatches for this region and season, and current weather conditions.
 
@@ -131,7 +139,11 @@ Only return the JSON array, nothing else.`;
       recommendations = getDefaultRecommendations(currentSeason);
     }
 
-    return new Response(JSON.stringify({ recommendations }), {
+    return new Response(JSON.stringify({ 
+      recommendations,
+      estimatedWaterTemp,
+      season: currentSeason
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
 
@@ -171,6 +183,43 @@ interface FlyRecommendation {
   type: string;
   reason: string;
   confidence: string;
+}
+
+// Estimate water temperature based on air temp, season, and latitude
+function estimateWaterTemperature(
+  airTemp?: number,
+  season?: string,
+  latitude?: number
+): number | null {
+  if (!airTemp) return null;
+  
+  // Water temperature typically lags behind air temperature
+  // and is moderated by thermal mass
+  let waterTemp = airTemp;
+  
+  // Seasonal adjustment - water is cooler in spring (warming), warmer in fall (cooling)
+  const seasonalAdjustment: Record<string, number> = {
+    spring: -4, // Water still cold from winter
+    summer: -2, // Water catches up but stays slightly cooler
+    fall: 2,    // Water retains summer warmth
+    winter: 2,  // Water retains fall warmth (above freezing)
+  };
+  
+  if (season) {
+    waterTemp += seasonalAdjustment[season] || 0;
+  }
+  
+  // Latitude adjustment - higher latitudes have colder water
+  if (latitude !== undefined) {
+    const latAdjustment = Math.abs(latitude) > 50 ? -3 : 
+                          Math.abs(latitude) > 40 ? -1 : 0;
+    waterTemp += latAdjustment;
+  }
+  
+  // Water temp typically ranges between 0-25°C for most fishing waters
+  waterTemp = Math.max(0, Math.min(25, waterTemp));
+  
+  return Math.round(waterTemp);
 }
 
 function getDefaultRecommendations(season: string): FlyRecommendation[] {

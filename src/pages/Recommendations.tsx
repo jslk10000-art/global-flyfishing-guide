@@ -14,9 +14,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { FlyRecommendation } from '@/types/database';
 import { supabase } from '@/integrations/supabase/client';
 import { fetchRealTimeWeather, RealTimeWeather } from '@/services/weatherService';
-import { Sparkles, Loader2, RefreshCw, Globe, LogIn } from 'lucide-react';
+import { Sparkles, Loader2, RefreshCw, Globe, LogIn, Bookmark, Thermometer, Check } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useLocation, SelectedLocation } from '@/hooks/useLocationContext';
+import { toast } from 'sonner';
 
 export default function RecommendationsPage() {
   const [searchParams] = useSearchParams();
@@ -48,7 +49,11 @@ export default function RecommendationsPage() {
   const [targetFish, setTargetFish] = useState('');
   const [waterTemp, setWaterTemp] = useState('');
   const [recommendations, setRecommendations] = useState<FlyRecommendation[]>([]);
+  const [estimatedWaterTemp, setEstimatedWaterTemp] = useState<number | null>(null);
+  const [currentSeason, setCurrentSeason] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
   // Show auth required message if not logged in
@@ -109,6 +114,8 @@ export default function RecommendationsPage() {
     setLocation(loc);
     setHasSearched(false);
     setRecommendations([]);
+    setEstimatedWaterTemp(null);
+    setIsSaved(false);
   };
 
   const getRecommendations = async () => {
@@ -116,6 +123,7 @@ export default function RecommendationsPage() {
     
     setLoading(true);
     setHasSearched(true);
+    setIsSaved(false);
 
     try {
       const { data, error } = await supabase.functions.invoke('fly-recommendations', {
@@ -124,7 +132,8 @@ export default function RecommendationsPage() {
           weather: weather?.condition || undefined,
           season: season || undefined,
           targetFish: targetFish || undefined,
-          waterTemp: waterTemp ? parseFloat(waterTemp) : weather?.temperature,
+          waterTemp: waterTemp ? parseFloat(waterTemp) : undefined,
+          airTemperature: weather?.temperature,
           latitude: location.latitude,
           longitude: location.longitude,
         },
@@ -132,6 +141,8 @@ export default function RecommendationsPage() {
 
       if (error) throw error;
       setRecommendations(data.recommendations || []);
+      setEstimatedWaterTemp(data.estimatedWaterTemp || null);
+      setCurrentSeason(data.season || '');
     } catch (error) {
       console.error('Error getting recommendations:', error);
       // Set fallback recommendations
@@ -142,6 +153,37 @@ export default function RecommendationsPage() {
       ]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const saveRecommendations = async () => {
+    if (!location || !user || recommendations.length === 0) return;
+    
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from('saved_fly_recommendations')
+        .insert({
+          user_id: user.id,
+          location_name: location.name,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          country: location.country || null,
+          recommendations: recommendations as unknown as Record<string, unknown>[],
+          weather_conditions: weather?.condition || null,
+          estimated_water_temp: estimatedWaterTemp,
+          season: currentSeason || season || null,
+          target_fish: targetFish || null,
+        } as any);
+
+      if (error) throw error;
+      setIsSaved(true);
+      toast.success('Recommendations saved to your profile!');
+    } catch (error) {
+      console.error('Error saving recommendations:', error);
+      toast.error('Failed to save recommendations');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -289,14 +331,47 @@ export default function RecommendationsPage() {
               </div>
             ) : recommendations.length > 0 ? (
               <div className="space-y-4">
-                <h2 className="font-display text-xl font-semibold">
-                  Recommended Flies for {location?.name}
-                </h2>
-                {weather && (
-                  <p className="text-sm text-muted-foreground">
-                    Current conditions: {weather.temperature}°{weather.temperatureUnit}, {weather.condition}
-                  </p>
-                )}
+                <div className="flex items-center justify-between">
+                  <h2 className="font-display text-xl font-semibold">
+                    Recommended Flies for {location?.name}
+                  </h2>
+                  <Button
+                    variant={isSaved ? "secondary" : "default"}
+                    size="sm"
+                    onClick={saveRecommendations}
+                    disabled={saving || isSaved}
+                  >
+                    {saving ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : isSaved ? (
+                      <Check className="h-4 w-4 mr-2" />
+                    ) : (
+                      <Bookmark className="h-4 w-4 mr-2" />
+                    )}
+                    {isSaved ? 'Saved' : 'Save to Profile'}
+                  </Button>
+                </div>
+                
+                {/* Conditions summary */}
+                <div className="flex flex-wrap gap-3 text-sm">
+                  {weather && (
+                    <span className="text-muted-foreground">
+                      {weather.temperature}°{weather.temperatureUnit}, {weather.condition}
+                    </span>
+                  )}
+                  {estimatedWaterTemp !== null && (
+                    <span className="flex items-center gap-1 text-primary font-medium">
+                      <Thermometer className="h-4 w-4" />
+                      Est. water temp: {estimatedWaterTemp}°C
+                    </span>
+                  )}
+                  {currentSeason && (
+                    <span className="text-muted-foreground capitalize">
+                      Season: {currentSeason}
+                    </span>
+                  )}
+                </div>
+                
                 {recommendations.map((rec, index) => (
                   <FlyRecommendationCard key={index} recommendation={rec} />
                 ))}
