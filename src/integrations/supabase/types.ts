@@ -133,6 +133,51 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_fly_recommendations: {
+        Row: {
+          country: string | null
+          created_at: string
+          estimated_water_temp: number | null
+          id: string
+          latitude: number
+          location_name: string
+          longitude: number
+          recommendations: Json
+          season: string | null
+          target_fish: string | null
+          user_id: string
+          weather_conditions: string | null
+        }
+        Insert: {
+          country?: string | null
+          created_at?: string
+          estimated_water_temp?: number | null
+          id?: string
+          latitude: number
+          location_name: string
+          longitude: number
+          recommendations: Json
+          season?: string | null
+          target_fish?: string | null
+          user_id: string
+          weather_conditions?: string | null
+        }
+        Update: {
+          country?: string | null
+          created_at?: string
+          estimated_water_temp?: number | null
+          id?: string
+          latitude?: number
+          location_name?: string
+          longitude?: number
+          recommendations?: Json
+          season?: string | null
+          target_fish?: string | null
+          user_id?: string
+          weather_conditions?: string | null
+        }
+        Relationships: []
+      }
       user_saved_locations: {
         Row: {
           admin1: string | null
