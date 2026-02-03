@@ -16,6 +16,7 @@ export function Header() {
   ];
 
   if (user) {
+    navLinks.push({ href: '/my-spots', label: 'My Spots' });
     navLinks.push({ href: '/log', label: 'My Log' });
   }
 

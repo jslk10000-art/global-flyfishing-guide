@@ -169,13 +169,27 @@ export default function Index() {
             </div>
             <div className="bg-card rounded-xl p-8 border shadow-lg">
               <Fish className="h-12 w-12 text-primary mb-4" />
-              <h3 className="font-display text-2xl font-bold mb-3">Ready to Fish?</h3>
-              <p className="text-muted-foreground mb-6">
-                Sign up to save your fishing logs, get personalized recommendations, and track your progress.
-              </p>
-              <Link to="/auth">
-                <Button size="lg" className="w-full">Get Started Free</Button>
-              </Link>
+              {user ? (
+                <>
+                  <h3 className="font-display text-2xl font-bold mb-3">Welcome Back!</h3>
+                  <p className="text-muted-foreground mb-6">
+                    View your saved fishing spots, logs, and recommendations.
+                  </p>
+                  <Link to="/my-spots">
+                    <Button size="lg" className="w-full">My Fishing Spots</Button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <h3 className="font-display text-2xl font-bold mb-3">Ready to Fish?</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Sign up to save your fishing logs, get personalized recommendations, and track your progress.
+                  </p>
+                  <Link to="/auth">
+                    <Button size="lg" className="w-full">Get Started Free</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
