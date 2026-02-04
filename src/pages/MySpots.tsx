@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import { useSavedLocations } from '@/hooks/useSavedLocations';
-import { useSavedRecommendations } from '@/hooks/useSavedRecommendations';
+import { useSavedRecommendations, SavedRecommendation } from '@/hooks/useSavedRecommendations';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -11,12 +11,51 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { MapPin, Thermometer, Fish, Trash2, Sparkles, Calendar, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 
+interface GroupedRecommendation extends SavedRecommendation {
+  recommendationNumber: number;
+  totalForLocation: number;
+}
+
 export default function MySpots() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { savedLocations, isLoading: locationsLoading, deleteLocation } = useSavedLocations();
   const { savedRecommendations, isLoading: recsLoading, deleteRecommendation } = useSavedRecommendations();
 
+  // Group recommendations by location and assign numbers
+  const groupedRecommendations = useMemo(() => {
+    const locationMap = new Map<string, SavedRecommendation[]>();
+    
+    // Group by location name
+    savedRecommendations.forEach(rec => {
+      const key = rec.location_name;
+      if (!locationMap.has(key)) {
+        locationMap.set(key, []);
+      }
+      locationMap.get(key)!.push(rec);
+    });
+    
+    // Sort each group by date (oldest first) and assign numbers
+    const result: GroupedRecommendation[] = [];
+    locationMap.forEach((recs) => {
+      // Sort by created_at ascending so #1 is the oldest
+      const sorted = [...recs].sort((a, b) => 
+        new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      );
+      sorted.forEach((rec, index) => {
+        result.push({
+          ...rec,
+          recommendationNumber: index + 1,
+          totalForLocation: sorted.length,
+        });
+      });
+    });
+    
+    // Sort final result by date descending (newest first for display)
+    return result.sort((a, b) => 
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+  }, [savedRecommendations]);
   useEffect(() => {
     if (!user) {
       navigate('/auth');
@@ -122,15 +161,20 @@ export default function MySpots() {
                   <Skeleton key={i} className="h-48" />
                 ))}
               </div>
-            ) : savedRecommendations.length > 0 ? (
+            ) : groupedRecommendations.length > 0 ? (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {savedRecommendations.map((rec) => (
+                {groupedRecommendations.map((rec) => (
                   <Card key={rec.id} className="group hover:shadow-md transition-shadow">
                     <CardHeader className="pb-2">
                       <div className="flex items-start justify-between">
-                        <Link to={`/my-spots/recommendation/${rec.id}`} className="hover:underline">
+                        <Link to={`/my-spots/recommendation/${rec.id}`} className="hover:underline flex-1">
                           <CardTitle className="text-lg flex items-center gap-1">
                             {rec.location_name}
+                            {rec.totalForLocation > 1 && (
+                              <span className="text-sm font-normal text-primary ml-1">
+                                #{rec.recommendationNumber}
+                              </span>
+                            )}
                             <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                           </CardTitle>
                         </Link>
@@ -143,9 +187,16 @@ export default function MySpots() {
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                      <CardDescription className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {format(new Date(rec.created_at), 'MMM d, yyyy')}
+                      <CardDescription className="flex items-center gap-2">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {format(new Date(rec.created_at), 'MMM d, yyyy')}
+                        </span>
+                        {rec.totalForLocation > 1 && (
+                          <span className="text-xs bg-muted px-1.5 py-0.5 rounded">
+                            {rec.totalForLocation} saved for this spot
+                          </span>
+                        )}
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-3">
