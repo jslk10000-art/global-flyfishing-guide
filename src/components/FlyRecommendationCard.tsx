@@ -1,4 +1,4 @@
-import { Sparkles, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Sparkles, TrendingUp, TrendingDown, Minus, Anchor, Ruler, Activity, ArrowDownToLine } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FlyRecommendation } from '@/types/database';
@@ -42,8 +42,36 @@ export function FlyRecommendationCard({ recommendation }: FlyRecommendationCardP
           {recommendation.type}
         </Badge>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-3">
         <p className="text-sm text-muted-foreground">{recommendation.reason}</p>
+        
+        {/* Fishing method details */}
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          {recommendation.lineType && (
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <Anchor className="h-3 w-3 text-primary" />
+              <span>{recommendation.lineType}</span>
+            </div>
+          )}
+          {recommendation.leaderLength && (
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <Ruler className="h-3 w-3 text-primary" />
+              <span>{recommendation.leaderLength}</span>
+            </div>
+          )}
+          {recommendation.retrieveStyle && (
+            <div className="flex items-center gap-1.5 text-muted-foreground col-span-2">
+              <Activity className="h-3 w-3 text-primary" />
+              <span>{recommendation.retrieveStyle}</span>
+            </div>
+          )}
+          {recommendation.idealDepth && (
+            <div className="flex items-center gap-1.5 text-muted-foreground col-span-2">
+              <ArrowDownToLine className="h-3 w-3 text-primary" />
+              <span>Depth: {recommendation.idealDepth}</span>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );
