@@ -12,6 +12,7 @@ import Recommendations from "./pages/Recommendations";
 import FishingLog from "./pages/FishingLog";
 import Auth from "./pages/Auth";
 import MySpots from "./pages/MySpots";
+import SavedRecommendationDetail from "./pages/SavedRecommendationDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/log" element={<FishingLog />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/my-spots" element={<MySpots />} />
+              <Route path="/my-spots/recommendation/:id" element={<SavedRecommendationDetail />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

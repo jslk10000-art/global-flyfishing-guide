@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import { useSavedLocations } from '@/hooks/useSavedLocations';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { MapPin, Thermometer, Fish, Trash2, Sparkles, Calendar } from 'lucide-react';
+import { MapPin, Thermometer, Fish, Trash2, Sparkles, Calendar, ExternalLink } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function MySpots() {
@@ -128,7 +128,12 @@ export default function MySpots() {
                   <Card key={rec.id} className="group hover:shadow-md transition-shadow">
                     <CardHeader className="pb-2">
                       <div className="flex items-start justify-between">
-                        <CardTitle className="text-lg">{rec.location_name}</CardTitle>
+                        <Link to={`/my-spots/recommendation/${rec.id}`} className="hover:underline">
+                          <CardTitle className="text-lg flex items-center gap-1">
+                            {rec.location_name}
+                            <ExternalLink className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </CardTitle>
+                        </Link>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -169,6 +174,11 @@ export default function MySpots() {
                         }
                         {Array.isArray(rec.recommendations) && rec.recommendations.length > 3 && '...'}
                       </div>
+                      <Link to={`/my-spots/recommendation/${rec.id}`}>
+                        <Button variant="outline" size="sm" className="w-full mt-2">
+                          View Full Details
+                        </Button>
+                      </Link>
                     </CardContent>
                   </Card>
                 ))}

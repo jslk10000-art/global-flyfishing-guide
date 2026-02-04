@@ -49,4 +49,8 @@ export interface FlyRecommendation {
   type: string;
   reason: string;
   confidence: 'high' | 'medium' | 'low';
+  lineType?: string;
+  leaderLength?: string;
+  retrieveStyle?: string;
+  idealDepth?: string;
 }

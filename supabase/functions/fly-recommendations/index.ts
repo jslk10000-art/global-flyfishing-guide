@@ -74,7 +74,7 @@ Coordinates: ${latitude && longitude ? `${latitude.toFixed(2)}°, ${longitude.to
 Weather: ${weather || 'Unknown'}
 Season: ${currentSeason}
 Target Fish: ${targetFish || 'Local trout or game fish'}
-Water Temperature: ${estimatedWaterTemp ? `${estimatedWaterTemp}°` : 'Unknown'}
+Water Temperature: ${estimatedWaterTemp ? `${estimatedWaterTemp}°C` : 'Unknown'}
 
 Consider the local fish species, typical hatches for this region and season, and current weather conditions.
 
@@ -83,6 +83,10 @@ For each fly, provide:
 2. Type (dry fly, nymph, streamer, emerger, or terrestrial)
 3. A brief reason why it's effective in these conditions
 4. Confidence level (high, medium, or low)
+5. Line type recommendation (floating, intermediate, slow sinking, fast sinking, or sinking tip)
+6. Leader length advice (e.g., "9ft 5X", "7ft 3X", "12ft 6X")
+7. Retrieve style (e.g., "dead drift", "slow strips", "fast erratic strips", "figure-eight", "swing and hang")
+8. Ideal depth to fish (e.g., "surface film", "1-3 feet", "mid-column 4-8 feet", "deep 10+ feet", "bottom")
 
 Respond in JSON format with an array of recommendations:
 [
@@ -90,7 +94,11 @@ Respond in JSON format with an array of recommendations:
     "name": "Fly Name",
     "type": "dry fly",
     "reason": "Brief explanation",
-    "confidence": "high"
+    "confidence": "high",
+    "lineType": "floating",
+    "leaderLength": "9ft 5X",
+    "retrieveStyle": "dead drift with occasional twitch",
+    "idealDepth": "surface film"
   }
 ]
 
@@ -183,6 +191,10 @@ interface FlyRecommendation {
   type: string;
   reason: string;
   confidence: string;
+  lineType?: string;
+  leaderLength?: string;
+  retrieveStyle?: string;
+  idealDepth?: string;
 }
 
 // Estimate water temperature based on air temp, season, and latitude
@@ -225,24 +237,24 @@ function estimateWaterTemperature(
 function getDefaultRecommendations(season: string): FlyRecommendation[] {
   const seasonalFlies: Record<string, FlyRecommendation[]> = {
     spring: [
-      { name: 'Blue Winged Olive', type: 'dry fly', reason: 'BWOs hatch heavily in spring during overcast days', confidence: 'high' },
-      { name: 'RS2', type: 'emerger', reason: 'Excellent emerger pattern for spring mayfly hatches', confidence: 'high' },
-      { name: 'San Juan Worm', type: 'nymph', reason: 'Effective year-round, especially during runoff', confidence: 'medium' },
+      { name: 'Blue Winged Olive', type: 'dry fly', reason: 'BWOs hatch heavily in spring during overcast days', confidence: 'high', lineType: 'floating', leaderLength: '9ft 5X', retrieveStyle: 'dead drift', idealDepth: 'surface film' },
+      { name: 'RS2', type: 'emerger', reason: 'Excellent emerger pattern for spring mayfly hatches', confidence: 'high', lineType: 'floating', leaderLength: '10ft 5X', retrieveStyle: 'dead drift with occasional lift', idealDepth: '1-2 feet' },
+      { name: 'San Juan Worm', type: 'nymph', reason: 'Effective year-round, especially during runoff', confidence: 'medium', lineType: 'floating with indicator', leaderLength: '7ft 4X', retrieveStyle: 'dead drift near bottom', idealDepth: 'bottom' },
     ],
     summer: [
-      { name: 'Elk Hair Caddis', type: 'dry fly', reason: 'Classic summer pattern matching prolific caddis hatches', confidence: 'high' },
-      { name: 'Hopper', type: 'terrestrial', reason: 'Grasshoppers are abundant near meadows in summer', confidence: 'high' },
-      { name: 'Pheasant Tail Nymph', type: 'nymph', reason: 'Versatile pattern that imitates many mayfly nymphs', confidence: 'medium' },
+      { name: 'Elk Hair Caddis', type: 'dry fly', reason: 'Classic summer pattern matching prolific caddis hatches', confidence: 'high', lineType: 'floating', leaderLength: '9ft 5X', retrieveStyle: 'dead drift or skate', idealDepth: 'surface' },
+      { name: 'Hopper', type: 'terrestrial', reason: 'Grasshoppers are abundant near meadows in summer', confidence: 'high', lineType: 'floating', leaderLength: '7ft 3X', retrieveStyle: 'splat cast then dead drift', idealDepth: 'surface' },
+      { name: 'Pheasant Tail Nymph', type: 'nymph', reason: 'Versatile pattern that imitates many mayfly nymphs', confidence: 'medium', lineType: 'floating with indicator', leaderLength: '9ft 5X', retrieveStyle: 'dead drift', idealDepth: '2-4 feet' },
     ],
     fall: [
-      { name: 'October Caddis', type: 'dry fly', reason: 'Large caddis hatches occur in fall evenings', confidence: 'high' },
-      { name: 'Woolly Bugger', type: 'streamer', reason: 'Trout feed aggressively before winter', confidence: 'high' },
-      { name: 'Baetis', type: 'dry fly', reason: 'Small mayflies hatch on cloudy fall days', confidence: 'medium' },
+      { name: 'October Caddis', type: 'dry fly', reason: 'Large caddis hatches occur in fall evenings', confidence: 'high', lineType: 'floating', leaderLength: '9ft 4X', retrieveStyle: 'dead drift or swing', idealDepth: 'surface' },
+      { name: 'Woolly Bugger', type: 'streamer', reason: 'Trout feed aggressively before winter', confidence: 'high', lineType: 'intermediate or sinking tip', leaderLength: '5ft 3X', retrieveStyle: 'slow strips with pauses', idealDepth: '4-8 feet' },
+      { name: 'Baetis', type: 'dry fly', reason: 'Small mayflies hatch on cloudy fall days', confidence: 'medium', lineType: 'floating', leaderLength: '12ft 6X', retrieveStyle: 'dead drift', idealDepth: 'surface film' },
     ],
     winter: [
-      { name: 'Midge', type: 'dry fly', reason: 'Midges are the primary winter food source', confidence: 'high' },
-      { name: 'Zebra Midge', type: 'nymph', reason: 'Deadly subsurface pattern in cold water', confidence: 'high' },
-      { name: 'Egg Pattern', type: 'nymph', reason: 'Imitates fish eggs during spawning season', confidence: 'medium' },
+      { name: 'Midge', type: 'dry fly', reason: 'Midges are the primary winter food source', confidence: 'high', lineType: 'floating', leaderLength: '12ft 6X', retrieveStyle: 'dead drift', idealDepth: 'surface film' },
+      { name: 'Zebra Midge', type: 'nymph', reason: 'Deadly subsurface pattern in cold water', confidence: 'high', lineType: 'floating with indicator', leaderLength: '9ft 5X', retrieveStyle: 'dead drift very slow', idealDepth: '1-4 feet' },
+      { name: 'Egg Pattern', type: 'nymph', reason: 'Imitates fish eggs during spawning season', confidence: 'medium', lineType: 'floating with indicator', leaderLength: '7ft 4X', retrieveStyle: 'dead drift near bottom', idealDepth: 'bottom' },
     ],
   };
 
