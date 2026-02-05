@@ -2,18 +2,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { WeatherWidget } from '@/components/WeatherWidget';
 import { LocationSearch } from '@/components/LocationSearch';
-import { SavedLocationsList } from '@/components/SavedLocationsList';
 import { Button } from '@/components/ui/button';
 import { useLocation } from '@/hooks/useLocationContext';
 import { useAuth } from '@/hooks/useAuth';
 import { Fish, MapPin, Sparkles, BookOpen, Globe, Heart } from 'lucide-react';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet';
 
 export default function Index() {
   const navigate = useNavigate();
@@ -86,22 +78,12 @@ export default function Index() {
                 {selectedLocation ? `Get Flies for ${selectedLocation.name}` : 'Get Fly Recommendations'}
               </Button>
               {user && (
-                <Sheet>
-                  <SheetTrigger asChild>
-                    <Button size="lg" variant="outline" className="gap-2">
-                      <Heart className="h-4 w-4" />
-                      My Saved Spots
-                    </Button>
-                  </SheetTrigger>
-                  <SheetContent>
-                    <SheetHeader>
-                      <SheetTitle>Saved Fishing Spots</SheetTitle>
-                    </SheetHeader>
-                    <div className="mt-6">
-                      <SavedLocationsList />
-                    </div>
-                  </SheetContent>
-                </Sheet>
+                <Link to="/my-spots">
+                  <Button size="lg" variant="outline" className="gap-2">
+                    <Heart className="h-4 w-4" />
+                    My Saved Spots
+                  </Button>
+                </Link>
               )}
               <Link to="/lakes">
                 <Button size="lg" variant="outline" className="gap-2">
