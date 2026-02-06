@@ -14,12 +14,9 @@ export function Header() {
     { href: '/lakes', label: 'Lakes' },
     { href: '/recommendations', label: 'Fly Finder' },
     { href: '/community', label: 'Community' },
+    { href: '/my-spots', label: 'My Spots' },
+    { href: '/log', label: 'My Log' },
   ];
-
-  if (user) {
-    navLinks.push({ href: '/my-spots', label: 'My Spots' });
-    navLinks.push({ href: '/log', label: 'My Log' });
-  }
 
   const isActive = (path: string) => location.pathname === path;
 
