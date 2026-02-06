@@ -14,6 +14,74 @@ export type Database = {
   }
   public: {
     Tables: {
+      community_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_posts: {
+        Row: {
+          content: string | null
+          created_at: string
+          fish_species: string | null
+          id: string
+          location_name: string | null
+          photo_url: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          fish_species?: string | null
+          id?: string
+          location_name?: string | null
+          photo_url?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          fish_species?: string | null
+          id?: string
+          location_name?: string | null
+          photo_url?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       fishing_logs: {
         Row: {
           created_at: string
@@ -23,6 +91,7 @@ export type Database = {
           id: string
           lake_id: string | null
           notes: string | null
+          photo_url: string | null
           success_rating: number | null
           updated_at: string
           user_id: string
@@ -37,6 +106,7 @@ export type Database = {
           id?: string
           lake_id?: string | null
           notes?: string | null
+          photo_url?: string | null
           success_rating?: number | null
           updated_at?: string
           user_id: string
@@ -51,6 +121,7 @@ export type Database = {
           id?: string
           lake_id?: string | null
           notes?: string | null
+          photo_url?: string | null
           success_rating?: number | null
           updated_at?: string
           user_id?: string

@@ -13,6 +13,7 @@ export function Header() {
     { href: '/', label: 'Home' },
     { href: '/lakes', label: 'Lakes' },
     { href: '/recommendations', label: 'Fly Finder' },
+    { href: '/community', label: 'Community' },
   ];
 
   if (user) {

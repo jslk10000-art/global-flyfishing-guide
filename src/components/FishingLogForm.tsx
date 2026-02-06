@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Plus, Star } from 'lucide-react';
 import { fishingLogSchema } from '@/lib/validations';
+import { PhotoUpload } from './PhotoUpload';
 
 interface FishingLogFormProps {
   onSuccess?: () => void;
@@ -34,6 +35,7 @@ export function FishingLogForm({ onSuccess }: FishingLogFormProps) {
   const [waterTemp, setWaterTemp] = useState('');
   const [notes, setNotes] = useState('');
   const [rating, setRating] = useState<number>(0);
+  const [photoUrl, setPhotoUrl] = useState('');
   const [errors, setErrors] = useState<FormErrors>({});
 
   const { data: lakes } = useLakes();
@@ -82,6 +84,7 @@ export function FishingLogForm({ onSuccess }: FishingLogFormProps) {
         water_temperature: result.data.water_temperature ?? undefined,
         notes: result.data.notes || undefined,
         success_rating: result.data.success_rating ?? undefined,
+        photo_url: photoUrl || undefined,
       });
 
       toast({
@@ -98,6 +101,7 @@ export function FishingLogForm({ onSuccess }: FishingLogFormProps) {
       setWaterTemp('');
       setNotes('');
       setRating(0);
+      setPhotoUrl('');
 
       onSuccess?.();
     } catch (error) {
@@ -253,6 +257,15 @@ export function FishingLogForm({ onSuccess }: FishingLogFormProps) {
             {errors.notes && (
               <p className="text-sm text-destructive">{errors.notes}</p>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <Label>Catch Photo</Label>
+            <PhotoUpload
+              onPhotoUploaded={setPhotoUrl}
+              currentPhotoUrl={photoUrl || undefined}
+              onRemove={() => setPhotoUrl('')}
+            />
           </div>
 
           <Button type="submit" className="w-full" disabled={createLog.isPending}>

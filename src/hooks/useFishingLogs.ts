@@ -36,6 +36,7 @@ interface CreateLogInput {
   water_temperature?: number;
   notes?: string;
   success_rating?: number;
+  photo_url?: string;
 }
 
 export function useCreateFishingLog() {
