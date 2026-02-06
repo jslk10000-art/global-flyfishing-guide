@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { Calendar, Fish, MapPin, Star, Trash2, Thermometer, Cloud } from 'lucide-react';
+import { Calendar, Fish, MapPin, Star, Trash2, Thermometer, Cloud, Camera } from 'lucide-react';
 import { format } from 'date-fns';
 
 export function FishingLogList() {
@@ -96,6 +96,11 @@ export function FishingLogList() {
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
+            {(log as any).photo_url && (
+              <div className="rounded-lg overflow-hidden border">
+                <img src={(log as any).photo_url} alt="Catch photo" className="w-full h-48 object-cover" />
+              </div>
+            )}
             <div className="flex flex-wrap gap-2">
               {log.fish_caught && (
                 <Badge variant="secondary" className="bg-forest-light text-forest">

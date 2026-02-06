@@ -10,6 +10,7 @@ import Lakes from "./pages/Lakes";
 import LakeDetail from "./pages/LakeDetail";
 import Recommendations from "./pages/Recommendations";
 import FishingLog from "./pages/FishingLog";
+import Community from "./pages/Community";
 import Auth from "./pages/Auth";
 import MySpots from "./pages/MySpots";
 import SavedRecommendationDetail from "./pages/SavedRecommendationDetail";
@@ -31,6 +32,7 @@ const App = () => (
               <Route path="/lakes/:id" element={<LakeDetail />} />
               <Route path="/recommendations" element={<Recommendations />} />
               <Route path="/log" element={<FishingLog />} />
+              <Route path="/community" element={<Community />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/my-spots" element={<MySpots />} />
               <Route path="/my-spots/recommendation/:id" element={<SavedRecommendationDetail />} />
