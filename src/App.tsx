@@ -15,6 +15,7 @@ import Auth from "./pages/Auth";
 import MySpots from "./pages/MySpots";
 import SavedRecommendationDetail from "./pages/SavedRecommendationDetail";
 import NotFound from "./pages/NotFound";
+import { BottomNav } from "./components/BottomNav";
 
 const queryClient = new QueryClient();
 
@@ -26,18 +27,21 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/lakes" element={<Lakes />} />
-              <Route path="/lakes/:id" element={<LakeDetail />} />
-              <Route path="/recommendations" element={<Recommendations />} />
-              <Route path="/log" element={<FishingLog />} />
-              <Route path="/community" element={<Community />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/my-spots" element={<MySpots />} />
-              <Route path="/my-spots/recommendation/:id" element={<SavedRecommendationDetail />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <div className="pb-14 md:pb-0">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/lakes" element={<Lakes />} />
+                <Route path="/lakes/:id" element={<LakeDetail />} />
+                <Route path="/recommendations" element={<Recommendations />} />
+                <Route path="/log" element={<FishingLog />} />
+                <Route path="/community" element={<Community />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/my-spots" element={<MySpots />} />
+                <Route path="/my-spots/recommendation/:id" element={<SavedRecommendationDetail />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+              <BottomNav />
+            </div>
           </BrowserRouter>
         </TooltipProvider>
       </LocationProvider>
