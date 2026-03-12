@@ -36,6 +36,7 @@ export function AuthForm() {
     }
   };
 
+  const handleSubmit = async (mode: 'signin' | 'signup') => {
     // Validate with zod
     const result = authSchema.safeParse({ email, password });
     
