@@ -1,4 +1,4 @@
-import { Fish, LogIn, LogOut, User, Menu, X } from 'lucide-react';
+import { Fish, LogIn, LogOut, User, Menu, X, Map } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { Link, useLocation } from 'react-router-dom';
