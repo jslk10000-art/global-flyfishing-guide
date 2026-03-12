@@ -1,4 +1,4 @@
-import { Fish, LogIn, LogOut, User, Menu, X } from 'lucide-react';
+import { Fish, LogIn, LogOut, User, Menu, X, Map } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { Link, useLocation } from 'react-router-dom';
@@ -12,6 +12,7 @@ export function Header() {
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/lakes', label: 'Lakes' },
+    { href: '/map', label: 'Map' },
     { href: '/recommendations', label: 'Fly Finder' },
     { href: '/community', label: 'Community' },
     { href: '/my-spots', label: 'My Spots' },
@@ -51,10 +52,10 @@ export function Header() {
         <div className="hidden md:flex items-center gap-3">
           {user ? (
             <>
-              <span className="text-sm text-muted-foreground flex items-center gap-1">
+              <Link to="/profile" className="text-sm text-muted-foreground flex items-center gap-1 hover:text-primary transition-colors">
                 <User className="h-4 w-4" />
                 {user.email?.split('@')[0]}
-              </span>
+              </Link>
               <Button variant="outline" size="sm" onClick={() => signOut()}>
                 <LogOut className="h-4 w-4 mr-1" />
                 Sign Out

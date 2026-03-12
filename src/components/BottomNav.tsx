@@ -1,4 +1,4 @@
-import { Home, MapPin, Bug, Users, Bookmark, BookOpen } from 'lucide-react';
+import { Home, MapPin, Bug, Users, Bookmark, BookOpen, Map } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 export function BottomNav() {
@@ -7,10 +7,11 @@ export function BottomNav() {
   const navItems = [
     { href: '/', label: 'Home', icon: Home },
     { href: '/lakes', label: 'Lakes', icon: MapPin },
-    { href: '/recommendations', label: 'Fly Finder', icon: Bug },
+    { href: '/map', label: 'Map', icon: Map },
+    { href: '/recommendations', label: 'Flies', icon: Bug },
     { href: '/community', label: 'Community', icon: Users },
-    { href: '/my-spots', label: 'My Spots', icon: Bookmark },
-    { href: '/log', label: 'My Log', icon: BookOpen },
+    { href: '/my-spots', label: 'Spots', icon: Bookmark },
+    { href: '/log', label: 'Log', icon: BookOpen },
   ];
 
   const isActive = (path: string) => location.pathname === path;
