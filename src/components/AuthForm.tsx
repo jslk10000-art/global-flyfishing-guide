@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Fish } from 'lucide-react';
 import { authSchema } from '@/lib/validations';
+import { lovable } from '@/integrations/lovable/index';
 
 export function AuthForm() {
   const [email, setEmail] = useState('');
