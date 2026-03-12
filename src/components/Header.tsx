@@ -12,6 +12,7 @@ export function Header() {
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/lakes', label: 'Lakes' },
+    { href: '/map', label: 'Map' },
     { href: '/recommendations', label: 'Fly Finder' },
     { href: '/community', label: 'Community' },
     { href: '/my-spots', label: 'My Spots' },
