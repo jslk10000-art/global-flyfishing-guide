@@ -20,7 +20,22 @@ export function AuthForm() {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleSubmit = async (mode: 'signin' | 'signup') => {
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      const { error } = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+      });
+      if (error) {
+        toast({ title: 'Error', description: (error as Error).message, variant: 'destructive' });
+      }
+    } catch (err: any) {
+      toast({ title: 'Error', description: err.message || 'Google sign-in failed', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
     // Validate with zod
     const result = authSchema.safeParse({ email, password });
     
