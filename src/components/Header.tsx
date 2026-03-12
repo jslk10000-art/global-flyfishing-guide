@@ -52,10 +52,10 @@ export function Header() {
         <div className="hidden md:flex items-center gap-3">
           {user ? (
             <>
-              <span className="text-sm text-muted-foreground flex items-center gap-1">
+              <Link to="/profile" className="text-sm text-muted-foreground flex items-center gap-1 hover:text-primary transition-colors">
                 <User className="h-4 w-4" />
                 {user.email?.split('@')[0]}
-              </span>
+              </Link>
               <Button variant="outline" size="sm" onClick={() => signOut()}>
                 <LogOut className="h-4 w-4 mr-1" />
                 Sign Out
