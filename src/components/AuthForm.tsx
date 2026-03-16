@@ -39,6 +39,27 @@ export function AuthForm() {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!forgotEmail.trim()) {
+      toast({ title: 'Error', description: 'Please enter your email address', variant: 'destructive' });
+      return;
+    }
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) {
+        toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      } else {
+        toast({ title: 'Check your email', description: 'We sent you a password reset link.' });
+        setForgotMode(false);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (mode: 'signin' | 'signup') => {
     // Validate with zod
     const result = authSchema.safeParse({ email, password });
