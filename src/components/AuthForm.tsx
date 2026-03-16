@@ -10,12 +10,15 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Fish } from 'lucide-react';
 import { authSchema } from '@/lib/validations';
 import { lovable } from '@/integrations/lovable/index';
+import { supabase } from '@/integrations/supabase/client';
 
 export function AuthForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [forgotMode, setForgotMode] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
   const { signUp, signIn } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -31,6 +34,27 @@ export function AuthForm() {
       }
     } catch (err: any) {
       toast({ title: 'Error', description: err.message || 'Google sign-in failed', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!forgotEmail.trim()) {
+      toast({ title: 'Error', description: 'Please enter your email address', variant: 'destructive' });
+      return;
+    }
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) {
+        toast({ title: 'Error', description: error.message, variant: 'destructive' });
+      } else {
+        toast({ title: 'Check your email', description: 'We sent you a password reset link.' });
+        setForgotMode(false);
+      }
     } finally {
       setLoading(false);
     }
@@ -77,6 +101,43 @@ export function AuthForm() {
       setLoading(false);
     }
   };
+
+  if (forgotMode) {
+    return (
+      <div className="flex min-h-[80vh] items-center justify-center px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary">
+              <Fish className="h-8 w-8 text-primary-foreground" />
+            </div>
+            <CardTitle className="font-display text-2xl">Reset Password</CardTitle>
+            <CardDescription>
+              Enter your email and we'll send you a reset link.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="forgot-email">Email</Label>
+              <Input
+                id="forgot-email"
+                type="email"
+                placeholder="your@email.com"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+              />
+            </div>
+            <Button className="w-full" onClick={handleForgotPassword} disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Send Reset Link
+            </Button>
+            <Button variant="ghost" className="w-full" onClick={() => setForgotMode(false)}>
+              Back to Sign In
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-4">
@@ -130,6 +191,15 @@ export function AuthForm() {
                 {errors.password && (
                   <p className="text-sm text-destructive">{errors.password}</p>
                 )}
+              </div>
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  className="text-sm text-primary hover:underline"
+                  onClick={() => setForgotMode(true)}
+                >
+                  Forgot password?
+                </button>
               </div>
               <Button 
                 className="w-full" 

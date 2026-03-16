@@ -16,6 +16,7 @@ import MySpots from "./pages/MySpots";
 import MapView from "./pages/MapView";
 import Profile from "./pages/Profile";
 import SavedRecommendationDetail from "./pages/SavedRecommendationDetail";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import { BottomNav } from "./components/BottomNav";
 
@@ -38,6 +39,7 @@ const App = () => (
                 <Route path="/log" element={<FishingLog />} />
                 <Route path="/community" element={<Community />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/my-spots" element={<MySpots />} />
                 <Route path="/my-spots/recommendation/:id" element={<SavedRecommendationDetail />} />
                 <Route path="/map" element={<MapView />} />
