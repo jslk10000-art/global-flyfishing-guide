@@ -16,6 +16,8 @@ export function AuthForm() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [forgotMode, setForgotMode] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
   const { signUp, signIn } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
