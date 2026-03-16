@@ -67,7 +67,6 @@ export default function Index() {
               <LocationSearch 
                 onLocationSelect={handleLocationSelect}
                 placeholder="Search any lake, river, or destination..."
-                initialValue={selectedLocation ? `${selectedLocation.name}, ${selectedLocation.country}` : ''}
                 selectedLocation={selectedLocation}
               />
             </div>
