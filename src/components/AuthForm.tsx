@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Fish } from 'lucide-react';
 import { authSchema } from '@/lib/validations';
 import { lovable } from '@/integrations/lovable/index';
+import { supabase } from '@/integrations/supabase/client';
 
 export function AuthForm() {
   const [email, setEmail] = useState('');
