@@ -155,6 +155,15 @@ export function AuthForm() {
                   <p className="text-sm text-destructive">{errors.password}</p>
                 )}
               </div>
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  className="text-sm text-primary hover:underline"
+                  onClick={() => setForgotMode(true)}
+                >
+                  Forgot password?
+                </button>
+              </div>
               <Button 
                 className="w-full" 
                 onClick={() => handleSubmit('signin')}
