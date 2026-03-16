@@ -49,12 +49,6 @@ export function LocationSearch({
 
   const debouncedQuery = useDebounce(query, 300);
 
-  // Sync query with initialValue when it changes
-  useEffect(() => {
-    if (initialValue) {
-      setQuery(initialValue);
-    }
-  }, [initialValue]);
 
   useEffect(() => {
     if (debouncedQuery.length < 2) {

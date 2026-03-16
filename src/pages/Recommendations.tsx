@@ -232,7 +232,6 @@ export default function RecommendationsPage() {
                   <LocationSearch 
                     onLocationSelect={handleLocationSelect}
                     placeholder="Search any lake or river..."
-                    initialValue={location ? `${location.name}, ${location.country}` : ''}
                     showSaveButton={false}
                   />
                 </div>
