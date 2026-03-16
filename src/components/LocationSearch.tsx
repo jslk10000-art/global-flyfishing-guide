@@ -4,8 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { geocodeLocation } from '@/services/weatherService';
-import { useDebounce } from '@/hooks/useDebounce';
 import { SaveLocationButton } from '@/components/SaveLocationButton';
+
 interface LocationResult {
   name: string;
   latitude: number;
@@ -47,35 +47,39 @@ export function LocationSearch({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const debouncedQuery = useDebounce(query, 300);
-
-
-  useEffect(() => {
-    if (debouncedQuery.length < 2) {
+  const doSearch = async (searchQuery: string) => {
+    if (searchQuery.length < 2) {
       setResults([]);
       return;
     }
+    
+    setLoading(true);
+    try {
+      const locations = await geocodeLocation(searchQuery);
+      setResults(locations);
+      setShowResults(true);
+    } catch (error) {
+      console.error('Geocoding error:', error);
+      setResults([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const search = async () => {
-      setLoading(true);
-      try {
-        const locations = await geocodeLocation(debouncedQuery);
-        setResults(locations);
-        setShowResults(true);
-      } catch (error) {
-        console.error('Geocoding error:', error);
-        setResults([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const handleSearchClick = () => {
+    doSearch(query);
+  };
 
-    search();
-  }, [debouncedQuery]);
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      doSearch(query);
+    }
+  };
 
   const handleSelect = (location: LocationResult) => {
     setQuery(`${location.name}${location.admin1 ? `, ${location.admin1}` : ''}, ${location.country}`);
-    setResults([]); // Clear results to prevent re-showing on focus
+    setResults([]);
     setShowResults(false);
     onLocationSelect(location);
   };
@@ -91,15 +95,25 @@ export function LocationSearch({
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
-              setShowResults(true);
             }}
+            onKeyDown={handleKeyDown}
             onFocus={() => results.length > 0 && setShowResults(true)}
-            className="pl-10 pr-10"
+            className="pl-10 pr-4"
           />
-          {loading && (
-            <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground animate-spin" />
-          )}
         </div>
+        <Button 
+          onClick={handleSearchClick} 
+          disabled={loading || query.length < 2}
+          size="default"
+          className="shrink-0"
+        >
+          {loading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Search className="h-4 w-4" />
+          )}
+          <span className="ml-2 hidden sm:inline">Search</span>
+        </Button>
         {showSaveButton && selectedLocation && (
           <SaveLocationButton location={selectedLocation} variant="icon" />
         )}

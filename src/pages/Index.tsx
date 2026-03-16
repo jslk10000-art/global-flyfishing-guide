@@ -69,6 +69,18 @@ export default function Index() {
                 placeholder="Search any lake, river, or destination..."
                 selectedLocation={selectedLocation}
               />
+              {selectedLocation && (
+                <div className="mt-2 flex items-center gap-2 text-sm">
+                  <MapPin className="h-3.5 w-3.5 text-primary" />
+                  <span className="text-muted-foreground">Selected: <strong>{selectedLocation.name}</strong></span>
+                  <button
+                    onClick={() => { setLocation(null); }}
+                    className="text-xs text-muted-foreground hover:text-foreground underline ml-1"
+                  >
+                    Clear
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="flex flex-wrap gap-4">
