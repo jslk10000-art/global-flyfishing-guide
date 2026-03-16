@@ -16,6 +16,7 @@ import MySpots from "./pages/MySpots";
 import MapView from "./pages/MapView";
 import Profile from "./pages/Profile";
 import SavedRecommendationDetail from "./pages/SavedRecommendationDetail";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import { BottomNav } from "./components/BottomNav";
 

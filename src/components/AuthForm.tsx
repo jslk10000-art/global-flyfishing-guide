@@ -102,6 +102,43 @@ export function AuthForm() {
     }
   };
 
+  if (forgotMode) {
+    return (
+      <div className="flex min-h-[80vh] items-center justify-center px-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary">
+              <Fish className="h-8 w-8 text-primary-foreground" />
+            </div>
+            <CardTitle className="font-display text-2xl">Reset Password</CardTitle>
+            <CardDescription>
+              Enter your email and we'll send you a reset link.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="forgot-email">Email</Label>
+              <Input
+                id="forgot-email"
+                type="email"
+                placeholder="your@email.com"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+              />
+            </div>
+            <Button className="w-full" onClick={handleForgotPassword} disabled={loading}>
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Send Reset Link
+            </Button>
+            <Button variant="ghost" className="w-full" onClick={() => setForgotMode(false)}>
+              Back to Sign In
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-4">
       <Card className="w-full max-w-md">
