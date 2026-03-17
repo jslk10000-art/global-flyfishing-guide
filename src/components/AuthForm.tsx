@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -19,9 +19,20 @@ export function AuthForm() {
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [forgotMode, setForgotMode] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
-  const { signUp, signIn } = useAuth();
+  const { user, signUp, signIn } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Redirect authenticated users (e.g. after Google OAuth return)
+  useEffect(() => {
+    if (user) {
+      toast({
+        title: 'Welcome!',
+        description: `Signed in as ${user.email}`,
+      });
+      navigate('/');
+    }
+  }, [user]);
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
