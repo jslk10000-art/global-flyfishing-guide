@@ -117,12 +117,12 @@ export default function MapView() {
           </div>
         </div>
 
-        <div className="flex-1 min-h-[400px] md:min-h-[600px]">
+        <div className="flex-1" style={{ minHeight: '500px' }}>
           <MapContainer
             center={center}
             zoom={4}
             scrollWheelZoom={true}
-            style={{ height: '100%', width: '100%' }}
+            style={{ height: '100%', width: '100%', minHeight: '500px' }}
           >
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
