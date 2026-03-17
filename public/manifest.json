@@ -1,0 +1,48 @@
+{
+  "background_color": "#a0d8f1",
+  "description": "Get live fly recommendations, real-time weather, and fishing conditions for any lake worldwide.",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Your Lake Fly Fishing Guide",
+  "orientation": "portrait",
+  "scope": "/",
+  "short_name": "Fly Fishing Guide",
+  "start_url": "/",
+  "theme_color": "#0a6ebd",
+  "icons": [
+    {
+      "src": "https://iqdfreuofvnhgynutrgr.supabase.co/storage/v1/object/public/catch-photos/fly-fisher/flyfishing.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "isSquare": true,
+      "isPng": true,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 1920,
+      "is512x512": true,
+      "is256x256": false,
+      "is192x192": false
+    },
+    {
+      "src": "https://joy-generator-lab.lovable.app/favicon.ico",
+      "type": "image/x-icon",
+      "isSquare": false,
+      "isPng": false,
+      "isWebp": false,
+      "isJpg": false,
+      "width": 0,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": false
+    }
+  ],
+  "categories": [
+    "navigation",
+    "social",
+    "sports",
+    "travel",
+    "weather"
+  ],
+  "id": "\"/your-lake-fly-fishing-guide\"",
+  "lang": "en"
+}
