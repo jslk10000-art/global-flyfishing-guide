@@ -159,6 +159,10 @@ export default function MapView() {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+            <MapController
+              markers={markers}
+              focus={hasFocus ? { lat: focusLat, lng: focusLng } : null}
+            />
             {markers.map((m) => (
               <Marker
                 key={m.id}
