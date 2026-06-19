@@ -390,7 +390,7 @@ export default function RecommendationsPage() {
                   <Globe className="h-12 w-12 text-primary/50 mb-4" />
                   <h3 className="font-display text-lg font-semibold mb-2">Search Any Location</h3>
                   <p className="text-muted-foreground text-center max-w-md">
-                    Search for any lake, river, or fishing destination worldwide. We'll fetch real-time weather and provide AI-powered fly recommendations.
+                    Search for any lake, river, or fishing destination worldwide. We'll fetch real-time weather and provide instant fly recommendations.
                   </p>
                 </CardContent>
               </Card>
