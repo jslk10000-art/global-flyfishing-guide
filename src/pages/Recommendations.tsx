@@ -211,7 +211,7 @@ export default function RecommendationsPage() {
         <div className="mb-8">
           <h1 className="font-display text-3xl font-bold mb-2 flex items-center gap-2">
             <Sparkles className="h-8 w-8 text-sunrise" />
-            AI Fly Finder
+            Fly Finder
           </h1>
           <p className="text-muted-foreground flex items-center gap-2">
             <Globe className="h-4 w-4" />
