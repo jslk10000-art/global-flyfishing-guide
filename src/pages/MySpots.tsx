@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { MapPin, Thermometer, Fish, Trash2, Sparkles, Calendar, ExternalLink } from 'lucide-react';
+import { MapPin, Thermometer, Fish, Trash2, Sparkles, Calendar, ExternalLink, Map as MapIcon } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface GroupedRecommendation extends SavedRecommendation {
@@ -126,7 +126,7 @@ export default function MySpots() {
                         {location.admin1 ? `${location.admin1}, ` : ''}{location.country}
                       </CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="space-y-2">
                       <Button
                         variant="outline"
                         size="sm"
@@ -135,6 +135,19 @@ export default function MySpots() {
                       >
                         <Sparkles className="h-4 w-4 mr-1" />
                         Get Fly Recommendations
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full"
+                        onClick={() =>
+                          navigate(
+                            `/map?filter=saved&lat=${location.latitude}&lng=${location.longitude}`
+                          )
+                        }
+                      >
+                        <MapIcon className="h-4 w-4 mr-1" />
+                        View on Map
                       </Button>
                     </CardContent>
                   </Card>

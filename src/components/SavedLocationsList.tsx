@@ -1,4 +1,4 @@
-import { MapPin, Trash2, Navigation } from 'lucide-react';
+import { MapPin, Trash2, Navigation, Map as MapIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -136,6 +136,19 @@ export function SavedLocationsList({ onLocationSelect, compact = false }: SavedL
                   <Button
                     variant="ghost"
                     size="icon"
+                    title="View on map"
+                    onClick={() =>
+                      navigate(
+                        `/map?filter=saved&lat=${location.latitude}&lng=${location.longitude}`
+                      )
+                    }
+                  >
+                    <MapIcon className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    title="Get recommendations"
                     onClick={() => handleNavigateToRecommendations(location)}
                   >
                     <Navigation className="h-4 w-4" />
