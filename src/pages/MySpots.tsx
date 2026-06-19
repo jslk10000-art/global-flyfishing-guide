@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { MapPin, Thermometer, Fish, Trash2, Sparkles, Calendar, ExternalLink } from 'lucide-react';
+import { MapPin, Thermometer, Fish, Trash2, Sparkles, Calendar, ExternalLink, Map as MapIcon } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface GroupedRecommendation extends SavedRecommendation {
