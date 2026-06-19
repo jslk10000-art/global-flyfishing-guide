@@ -20,7 +20,7 @@ export default function Community() {
             Angler Community
           </h1>
           <p className="text-muted-foreground">
-            Share your catches, ask questions, and identify fish species with AI
+            Share your catches, ask questions, and identify fish species instantly
           </p>
         </div>
 
@@ -29,7 +29,7 @@ export default function Community() {
             <Users className="h-16 w-16 text-muted-foreground/50 mb-4" />
             <h2 className="font-display text-xl font-bold mb-2">Sign in to join the community</h2>
             <p className="text-muted-foreground mb-6">
-              Share catches, comment on posts, and use the AI fish identifier.
+              Share catches, comment on posts, and use the fish identifier.
             </p>
             <Link to="/auth">
               <Button size="lg">

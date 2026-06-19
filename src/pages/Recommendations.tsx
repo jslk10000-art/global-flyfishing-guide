@@ -64,9 +64,9 @@ export default function RecommendationsPage() {
         <main className="container py-8">
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <Sparkles className="h-16 w-16 text-muted-foreground/50 mb-4" />
-            <h1 className="font-display text-2xl font-bold mb-2">Sign in to use AI Fly Finder</h1>
+            <h1 className="font-display text-2xl font-bold mb-2">Sign in to use Fly Finder</h1>
             <p className="text-muted-foreground mb-6">
-              Get personalized fly recommendations powered by AI for any location worldwide.
+              Get personalized fly recommendations for any location worldwide.
             </p>
             <Link to="/auth">
               <Button size="lg">
@@ -211,7 +211,7 @@ export default function RecommendationsPage() {
         <div className="mb-8">
           <h1 className="font-display text-3xl font-bold mb-2 flex items-center gap-2">
             <Sparkles className="h-8 w-8 text-sunrise" />
-            AI Fly Finder
+            Fly Finder
           </h1>
           <p className="text-muted-foreground flex items-center gap-2">
             <Globe className="h-4 w-4" />
@@ -390,7 +390,7 @@ export default function RecommendationsPage() {
                   <Globe className="h-12 w-12 text-primary/50 mb-4" />
                   <h3 className="font-display text-lg font-semibold mb-2">Search Any Location</h3>
                   <p className="text-muted-foreground text-center max-w-md">
-                    Search for any lake, river, or fishing destination worldwide. We'll fetch real-time weather and provide AI-powered fly recommendations.
+                    Search for any lake, river, or fishing destination worldwide. We'll fetch real-time weather and provide instant fly recommendations.
                   </p>
                 </CardContent>
               </Card>

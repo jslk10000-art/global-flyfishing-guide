@@ -58,7 +58,7 @@ export default function Index() {
               <span className="text-primary block">Fly Fishing Guide</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed">
-              Search any lake or river worldwide. Get AI-powered fly recommendations, 
+              Search any lake or river worldwide. Get Instant fly recommendations, 
               real-time weather, and log your catches.
             </p>
 
@@ -124,7 +124,7 @@ export default function Index() {
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-sunrise-light mb-4">
                 <Sparkles className="h-7 w-7 text-sunrise" />
               </div>
-              <h3 className="font-display text-xl font-semibold mb-2">AI Fly Finder</h3>
+              <h3 className="font-display text-xl font-semibold mb-2">Fly Finder</h3>
               <p className="text-muted-foreground">
                 Get personalized fly recommendations based on weather, season, and target species.
               </p>
