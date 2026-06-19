@@ -58,7 +58,7 @@ export default function Index() {
               <span className="text-primary block">Fly Fishing Guide</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed">
-              Search any lake or river worldwide. Get AI-powered fly recommendations, 
+              Search any lake or river worldwide. Get Instant fly recommendations, 
               real-time weather, and log your catches.
             </p>
 
