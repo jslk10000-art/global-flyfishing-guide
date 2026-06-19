@@ -136,6 +136,19 @@ export function SavedLocationsList({ onLocationSelect, compact = false }: SavedL
                   <Button
                     variant="ghost"
                     size="icon"
+                    title="View on map"
+                    onClick={() =>
+                      navigate(
+                        `/map?filter=saved&lat=${location.latitude}&lng=${location.longitude}`
+                      )
+                    }
+                  >
+                    <MapIcon className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    title="Get recommendations"
                     onClick={() => handleNavigateToRecommendations(location)}
                   >
                     <Navigation className="h-4 w-4" />
