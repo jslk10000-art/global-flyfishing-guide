@@ -67,7 +67,7 @@ Deno.serve(async (req) => {
       latitude
     );
 
-    const prompt = `You are an expert fly fishing guide with worldwide knowledge. Based on the following conditions, recommend 3-5 flies that would be most effective:
+    const prompt = `You are an expert fly fishing guide with worldwide knowledge. Based on the following conditions, recommend 6-8 DIVERSE flies that would be most effective. Provide real variety: include a mix across categories (at least one dry fly, one nymph, one streamer, one emerger, and one terrestrial when seasonally appropriate), vary sizes/colors, and include both classic proven patterns AND a couple of less obvious or region-specific patterns that match the local hatches, baitfish, or food sources. Avoid repeating similar patterns.
 
 Location: ${lake || 'Unknown location'}
 Coordinates: ${latitude && longitude ? `${latitude.toFixed(2)}°, ${longitude.toFixed(2)}°` : 'Unknown'}
