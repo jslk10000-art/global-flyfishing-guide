@@ -1,14 +1,38 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { useAuth } from '@/hooks/useAuth';
 import { useLakes } from '@/hooks/useLakes';
 import { useSavedLocations } from '@/hooks/useSavedLocations';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Sparkles, MapPin, Bookmark } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
+
+function MapController({
+  markers,
+  focus,
+}: {
+  markers: Array<{ lat: number; lng: number }>;
+  focus: { lat: number; lng: number } | null;
+}) {
+  const map = useMap();
+  useEffect(() => {
+    if (focus) {
+      map.setView([focus.lat, focus.lng], 12, { animate: true });
+      return;
+    }
+    if (markers.length === 0) return;
+    if (markers.length === 1) {
+      map.setView([markers[0].lat, markers[0].lng], 10, { animate: true });
+      return;
+    }
+    const bounds = L.latLngBounds(markers.map((m) => [m.lat, m.lng] as [number, number]));
+    map.fitBounds(bounds, { padding: [40, 40] });
+  }, [markers, focus, map]);
+  return null;
+}
 
 // Fix default marker icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
