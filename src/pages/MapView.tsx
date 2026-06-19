@@ -64,7 +64,14 @@ export default function MapView() {
   const { user } = useAuth();
   const { data: lakes } = useLakes();
   const { savedLocations } = useSavedLocations();
-  const [filter, setFilter] = useState<'all' | 'lakes' | 'saved'>('all');
+  const [searchParams] = useSearchParams();
+  const focusLat = parseFloat(searchParams.get('lat') || '');
+  const focusLng = parseFloat(searchParams.get('lng') || '');
+  const hasFocus = !isNaN(focusLat) && !isNaN(focusLng);
+  const initialFilter = searchParams.get('filter');
+  const [filter, setFilter] = useState<'all' | 'lakes' | 'saved'>(
+    initialFilter === 'saved' || initialFilter === 'lakes' ? initialFilter : 'all'
+  );
 
   const lakesWithCoords = useMemo(
     () => (lakes || []).filter((l) => l.latitude && l.longitude),
