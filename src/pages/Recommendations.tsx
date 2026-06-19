@@ -64,9 +64,9 @@ export default function RecommendationsPage() {
         <main className="container py-8">
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <Sparkles className="h-16 w-16 text-muted-foreground/50 mb-4" />
-            <h1 className="font-display text-2xl font-bold mb-2">Sign in to use AI Fly Finder</h1>
+            <h1 className="font-display text-2xl font-bold mb-2">Sign in to use Fly Finder</h1>
             <p className="text-muted-foreground mb-6">
-              Get personalized fly recommendations powered by AI for any location worldwide.
+              Get personalized fly recommendations for any location worldwide.
             </p>
             <Link to="/auth">
               <Button size="lg">
