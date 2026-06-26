@@ -1,16 +1,27 @@
 {
+  "id": "https://global-flyfishing-guide.jslk10000.workers.dev/",
   "name": "Your Lake Fly Fishing Guide",
-  "short_name": "Fly Fishing Guide",
+  "short_name": "Fly Fishing",
   "description": "Get live fly recommendations, real-time weather, and fishing conditions for any lake worldwide.",
   "start_url": "https://global-flyfishing-guide.jslk10000.workers.dev/",
   "scope": "https://global-flyfishing-guide.jslk10000.workers.dev/",
   "display": "standalone",
-  "orientation": "portrait",
+  "display_override": ["window-controls-overlay", "standalone", "browser"],
+  "orientation": "any",
   "dir": "ltr",
   "lang": "en",
   "theme_color": "#0a6ebd",
   "background_color": "#a0d8f1",
   "categories": ["navigation", "social", "sports", "travel", "weather"],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Get Fly Recommendations",
+      "short_name": "Fly Recs",
+      "description": "Get instant fly recommendations for your lake",
+      "url": "/?shortcut=recommendations"
+    }
+  ],
   "icons": [
     {
       "src": "https://iqdfreuofvnhgynutrgr.supabase.co/storage/v1/object/public/catch-photos/fly-fisher/flyfishing.png",
